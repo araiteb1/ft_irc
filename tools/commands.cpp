@@ -92,7 +92,6 @@ void	Server::cmdpass(std::vector<std::string>& SplitedMsg, Client *c)
 	c->seTPass(SplitedMsg[1]);
 }
 
-
 void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
 {
 	Client *newClient;
@@ -151,4 +150,17 @@ void	Server::cmduser(Client *c, std::vector<std::string> &SplitedMsg)
             + c->getNick() + " :This server was created "
             + this->birthday);
     }
+}
+
+void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS);
+    if (SplitedMsg[1][0] != '#')
+        throw Myexception(ERR_NOSUCHCHANNEL);
+    
+    std::cout << SplitedMsg[0] << std::endl;
+    std::cout << SplitedMsg[1] << std::endl;
+
+
 }

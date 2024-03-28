@@ -65,6 +65,7 @@ class Server {
 		int							compress_array;
 		std::string					msgsendResponce;
 		std::string					checkPiv;
+		std::map <int, Channel>		Channels;
 		std::map <int, Client *>	clients;
 
     public:
@@ -99,6 +100,7 @@ class Server {
 		void			cmdpass(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdknick(std::vector<std::string> &SplitedMsg, Client *c);
 		void			cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdjoin(std::vector<std::string>& SplitedMsg, Client *c);
 
         Client*			getClientByFd(int fdUser);
 		Client*			getClientByNickname(std::string nickname);

@@ -47,6 +47,8 @@ std::string     Myexception::msgError(int num)
             return (":Unknown command");
         case ERR_NOTREGISTERED:
             return (":You have not registered");
+        case ERR_NOSUCHCHANNEL:
+            return (":No such channel");
         default:
             return(":Undefined reply");
     }
