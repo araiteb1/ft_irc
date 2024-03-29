@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 12:36:12 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/03/29 11:26:48 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 Server::Server(std::string ipAdd, int port): m_pass(ipAdd),m_port(port)
 {
 	this->name = ":42_IRC ";
-	this->num = 1;
 	this->user_num = 1;
 	this->on = 1;
 	this->timeout = 3 * 60 * 10000000;
@@ -221,9 +220,9 @@ int 		Server::acceptingData(){
 		}
 		Client *c = new Client(newfd);
 		this->clients.insert(std::pair<int, Client *>(newfd, c));
-		users[user_num].fd = newfd;
-		users[user_num]. events = POLLIN;
-		user_num++;
+		users[this->user_num].fd = newfd;
+		users[this->user_num]. events = POLLIN;
+		this->user_num++;
 
         sendResponce(newfd, this->name + "NOTICE AUTH :*** Looking up your hostname . . .\n");
 	    sendResponce(newfd, this->name + "NOTICE AUTH :*** Found your hostname\n");
@@ -282,7 +281,7 @@ void	Server::PollingFd()
 	std::cout << "Server is running . . . " << std::endl;
 	do
 	{
-		int flg = poll(users , user_num, timeout);
+		int flg = poll(users , this->user_num, timeout);
 		if (flg < 0)
 		{
 			std::cout << "Failed." << errno <<std::endl;
@@ -293,7 +292,6 @@ void	Server::PollingFd()
 			std::cout << "End program : time out" << std::endl;
 			this->quitServer();
 		}
-		num = user_num;
 		for (int i = 0; i < this->user_num; i++)
 		{
 			if (users[i].revents == 0)

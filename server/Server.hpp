@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 11:29:31 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/03/29 11:24:39 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,9 @@ class Server {
 		int							server_fd;
 		int							on;
 		int							user_num;
-		int							num;
-		int							end_con;
 		sockaddr_in					address;
 		struct pollfd				users[LIMITCNX];
-		int							len;
 		long int					timeout;
-		int							end_ser;
-		int							compress_array;
-		std::string					msgsendResponce;
-		std::string					checkPiv;
 		std::map <int, Client *>	clients;
 
     public:

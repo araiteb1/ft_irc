@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 13:50:15 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/03/29 11:29:11 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
         return ;
     for (int i = 0 ; SplitedMsg[0][i] ; i++)
 		SplitedMsg[0][i] = toupper(SplitedMsg[0][i]);
+    std::cout << "=====> ["<< SplitedMsg[0] << "]<======"<< std::endl;
+    std::cout << "=====> ["<< SplitedMsg[1] << "]<======"<< std::endl;
     try
     {
         if (!SplitedMsg[0].compare("PASS"))
@@ -33,6 +35,7 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
         {
             if(!SplitedMsg[0].compare("PRIVMSG"))
                 cmdprivmsg(SplitedMsg, c);
+            
         }
         else
             throw Myexception(ERR_ALREADYREGISTRED);
