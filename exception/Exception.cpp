@@ -47,6 +47,22 @@ std::string     Myexception::msgError(int num)
             return (":Unknown command");
         case ERR_NOTREGISTERED:
             return (":You have not registered");
+        case ERR_NOSUCHCHANNEL:
+            return (":No such channel");
+        case ERR_CHANNELISFULL:
+            return (":Cannot join channel (+l)");
+        case ERR_INVITEONLYCHAN:
+            return (":Cannot join channel (+i)");
+        case ERR_BADCHANNELKEY:
+            return (":Cannot join channel (+k)");
+        case ERR_BADCHANMASK:
+            return (":Bad Channel Mask");
+        case ERR_CHANOPRIVSNEEDED:
+            return (":You're not channel operator");
+        case ERR_USERNOTINCHANNEL:
+            return (":They aren't on that channel");
+        case ERR_NOTONCHANNEL:
+            return (":You're not on that channel");
         default:
             return(":Undefined reply");
     }

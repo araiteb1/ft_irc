@@ -35,11 +35,25 @@ enum e_rronum{
     ERR_NOTOPLEVEL = 413,
     ERR_TOOMANYTARGETS = 407,
     ERR_PASSWDMISMATCH = 464,
-    ERR_UNKNOWNCOMMAND = 421
+    ERR_UNKNOWNCOMMAND = 421,
+    //  added by anammal
+    ERR_NOSUCHCHANNEL = 403,
+    ERR_CHANNELISFULL = 471,
+    ERR_INVITEONLYCHAN = 473,
+    ERR_BADCHANNELKEY = 475,
+    ERR_BADCHANMASK = 476,
+    ERR_CHANOPRIVSNEEDED = 482,
+    ERR_USERNOTINCHANNEL = 441,
+    ERR_NOTONCHANNEL = 442
+    // end
 };
 
 enum  e_repl{
-    RPL_AWAY = 301
+    RPL_AWAY = 301,
+    //  added by anammal
+    RPL_TOPIC = 332,
+    RPL_NAMREPLY = 353
+    // end
 };
 
 class Myexception : public std::exception{
@@ -64,3 +78,4 @@ class Myexception : public std::exception{
             }
 };
 #endif
+

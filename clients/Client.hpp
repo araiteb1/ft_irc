@@ -53,6 +53,8 @@ class Client
 		std::string		getrealname();
 		
 		std::string 	getIdent();
+
+		void			sendMsg(std::string msg);
 };
 
 

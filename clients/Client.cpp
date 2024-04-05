@@ -90,6 +90,11 @@ int             Client::getFd() {
 	return this->fd;
 }
 
-std::string   Client::getIdent(){
+std::string		Client::getIdent(){
 	return (this->getNick() + "!" + this->gethostname() + "@localhost");
+}
+
+void			Client::sendMsg(std::string msg)
+{
+	send(fd, msg.c_str(), msg.length(), 0);
 }

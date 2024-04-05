@@ -16,7 +16,9 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <vector>
+
 class Message
 {
     private:
