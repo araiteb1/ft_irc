@@ -33,11 +33,15 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 		{
 			if(!SplitedMsg[0].compare("PRIVMSG"))
 				cmdprivmsg(SplitedMsg, c);
-		}
-		else if(!SplitedMsg[0].compare("JOIN"))
+			else if(!SplitedMsg[0].compare("JOIN"))
 				cmdjoin(SplitedMsg, c);
-		else if(!SplitedMsg[0].compare("KICK"))
+			else if(!SplitedMsg[0].compare("KICK"))
 				cmdkick(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("INVITE"))
+				cmdinvite(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("TOPIC"))
+				cmdtopic(SplitedMsg, c);
+		}
 		else
 			throw Myexception(ERR_ALREADYREGISTRED);
 	}

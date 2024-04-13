@@ -22,7 +22,7 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
     if (SplitedMsg.size() > 2)
     {
         std::vector<std::string> tmp = split(SplitedMsg[2], ',');
-        if (tmp.size() >= keys.size())
+        if (tmp.size() > keys.size())
             keys = tmp;
         else
             keys.insert(keys.begin(), tmp.begin(), tmp.end());
@@ -35,6 +35,8 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
         if (channels.find(names[i]) == channels.end())
         {
             ch = new Channel(names[i], keys[i], c);
+            if (!keys[i].empty())
+                ch->setMode(MODE_CHANKEY);
             channels[names[i]] = ch;
         }
         else
