@@ -106,6 +106,7 @@ class Server {
 		void			cmdjoin(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdkick(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdinvite(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdtopic(std::vector<std::string>& SplitedMsg, Client *c);
 
         Client*			getClientByFd(int fdUser);
 		Client*			getClientByNickname(std::string nickname);

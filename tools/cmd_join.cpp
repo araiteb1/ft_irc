@@ -40,7 +40,7 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
         else
         {
             ch = channels[names[i]];
-            if (ch->getKey() != keys[i])
+            if (ch->getMode() & MODE_CHANKEY && ch->getKey() != keys[i])
                 throw Myexception(ERR_BADCHANNELKEY);
             if (ch->getMode() & MODE_USERLIM && ch->getLimit() <= ch->getMembers().size())
                 throw Myexception(ERR_CHANNELISFULL);
@@ -50,7 +50,9 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
         }
         std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " JOIN " + names[i] + "\r\n";
         ch->broadcast(msg, c);
-        if (!ch->getTopic().empty())
+        if (ch->getTopic().empty())
+            c->sendMsg(":" + name + " 331 " + c->getNick() + " " + names[i] + " :No topic is set\r\n");
+        else
             c->sendMsg(":" + name + " 332 " + c->getNick() + " " + names[i] + " :" + ch->getTopic() + "\r\n");
         c->sendMsg(":" + name + " 353 " + c->getNick() + " = " + names[i] + " :" + ch->getMemberList() + "\r\n");
         c->sendMsg(":" + name + " 366 " + c->getNick() + " " + names[i] + " :End of /NAMES list\r\n");
@@ -112,4 +114,30 @@ void	Server::cmdinvite(std::vector<std::string>& SplitedMsg, Client *c)
     ch->addInvited(target);
     std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " INVITE " + target->getNick() + ' ' + SplitedMsg[2] + "\r\n";
     target->sendMsg(msg);
+}
+
+void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS);
+    Channel *ch = channels[SplitedMsg[1]];
+    if (!ch)
+        throw Myexception(ERR_NOSUCHCHANNEL);
+    if (!ch->isMember(c))
+        throw Myexception(ERR_NOTONCHANNEL);
+    if (SplitedMsg.size() == 2)
+    {
+        if (ch->getTopic().empty())
+            c->sendMsg(":" + name + " 331 " + c->getNick() + " " + SplitedMsg[1] + " :No topic is set\r\n");
+        else
+            c->sendMsg(":" + name + " 332 " + c->getNick() + " " + SplitedMsg[1] + " :" + ch->getTopic() + "\r\n");
+    }
+    else
+    {
+        if (ch->getMode() & MODE_TOPREST && !ch->isOperator(c))
+            throw Myexception(ERR_CHANOPRIVSNEEDED);
+        ch->setTopic(SplitedMsg[2]);
+        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " TOPIC " + SplitedMsg[1] + " :" + SplitedMsg[2] + "\r\n";
+        ch->broadcast(msg, c);
+    }
 }
