@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <cstddef> 
 #include <sstream>
+#include <algorithm>
 #include <map>
 #include <vector>
 #include <iostream>
@@ -43,6 +44,7 @@
 
 class Client;
 class Message;
+class Channel;
 
 class Server {
 	

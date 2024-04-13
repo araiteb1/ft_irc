@@ -22,7 +22,10 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
     if (SplitedMsg.size() > 2)
     {
         std::vector<std::string> tmp = split(SplitedMsg[2], ',');
-        keys.insert(keys.begin(), tmp.begin(), tmp.end());
+        if (tmp.size() >= keys.size())
+            keys = tmp;
+        else
+            keys.insert(keys.begin(), tmp.begin(), tmp.end());
     }
     for (size_t i = 0; i < names.size(); i++)
     {

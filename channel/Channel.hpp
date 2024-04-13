@@ -21,7 +21,7 @@ class Channel
     uint8_t             mode;
     std::string         key;
     std::string         topic;
-    int                 limit;
+    size_t             limit;
     MemberMap           members;
     ClientMap           invited;
 
@@ -38,7 +38,7 @@ public:
     uint8_t             getMode() const;
     std::string const   &getKey() const;
     std::string const   &getTopic() const;
-    int                 getLimit() const;
+    size_t              getLimit() const;
     MemberMap const     &getMembers() const;
     ClientMap const     &getInvited() const;
     std::string         getMemberList() const;

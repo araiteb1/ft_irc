@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.hpp": "cpp",
+        "*.tpp": "cpp",
+        "iosfwd": "cpp"
+    }
+}

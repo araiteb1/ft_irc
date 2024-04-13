@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
 Channel::Channel(std::string const &name, std::string const &key , Client  *op)
-	: name(name), key(key) , mode(0), limit(0)
+	: name(name), mode(0), key(key), limit(0)
 {
 	// std::cout << "Channel: Default constructor called" << std::endl;
 	members.insert(std::make_pair(op, true));
@@ -43,7 +43,7 @@ std::string const   &Channel::getTopic() const
 	return (topic);
 }
 
-int                 Channel::getLimit() const
+size_t              Channel::getLimit() const
 {
 	return (limit);
 }

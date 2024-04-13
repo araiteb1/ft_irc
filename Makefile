@@ -15,7 +15,7 @@ EXECB = Bot
 INCLUDE = ./server/Server.hpp ./clients/Client.hpp ./message/Message.hpp  ./exception/Exception.hpp
 INCLUDEB = ./bonus/Bot.hpp ./clients/Client.hpp ./message/Message.hpp  ./exception/Exception.hpp
 SRCS = main.cpp ./clients/Client.cpp ./server/Server.cpp ./tools/ft_split.cpp  ./message/Message.cpp ./exception/Exception.cpp \
-	./tools/commands.cpp 
+	./tools/commands.cpp ./tools/cmd_join.cpp ./channel/Channel.cpp
 SRCSB = ./bonus/main_bonus.cpp ./bonus/Bot.cpp ./bonus/Bot_commands.cpp ./tools/ft_split.cpp  ./message/Message.cpp
 
 CC = c++ 
