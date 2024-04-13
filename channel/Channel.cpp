@@ -123,6 +123,11 @@ void                Channel::addMember(Client *client)
 		members.insert(std::make_pair(client, false));
 }
 
+void				Channel::addInvited(Client *client)
+{
+	invited.insert(std::make_pair(client->getFd(), client));
+}
+
 void				Channel::removeMember(Client *client)
 {
 	MemberMap::iterator member = members.find(client);

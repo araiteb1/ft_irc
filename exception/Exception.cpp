@@ -63,6 +63,8 @@ std::string     Myexception::msgError(int num)
             return (":They aren't on that channel");
         case ERR_NOTONCHANNEL:
             return (":You're not on that channel");
+        case ERR_USERONCHANNEL:
+            return (":is already on channel");
         default:
             return(":Undefined reply");
     }

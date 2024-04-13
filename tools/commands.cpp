@@ -36,6 +36,8 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 		}
 		else if(!SplitedMsg[0].compare("JOIN"))
 				cmdjoin(SplitedMsg, c);
+		else if(!SplitedMsg[0].compare("KICK"))
+				cmdkick(SplitedMsg, c);
 		else
 			throw Myexception(ERR_ALREADYREGISTRED);
 	}
@@ -68,6 +70,7 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 		tmpClient = this->getClientByNickname(SplitedMsg[1]);
 		if (tmpClient && (tmpClient->getFd() != c->getFd() || !SplitedMsg[1].compare("Bot")))
 			throw Myexception(ERR_NICKNAMEINUSE);
+		std::cout << SplitedMsg[1] << std::endl; // is empty !!
 		c->seTNick(SplitedMsg[1]);
 		if (this->IsAuthorized(*c) == 2)
 			throw  Myexception(ERR_PASSWDMISMATCH);

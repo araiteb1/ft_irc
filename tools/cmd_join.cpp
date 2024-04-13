@@ -48,7 +48,8 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
                 throw Myexception(ERR_INVITEONLYCHAN);
             ch->addMember(c);
         }
-        ch->broadcast(':' + name + ' ' + c->getNick() + " JOIN " + names[i] + "\f\r", c);
+        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " JOIN " + names[i] + "\r\n";
+        ch->broadcast(msg, c);
         if (!ch->getTopic().empty())
             c->sendMsg(":" + name + " 332 " + c->getNick() + " " + names[i] + " :" + ch->getTopic() + "\r\n");
         c->sendMsg(":" + name + " 353 " + c->getNick() + " = " + names[i] + " :" + ch->getMemberList() + "\r\n");
@@ -86,9 +87,29 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
             throw Myexception(ERR_USERNOTINCHANNEL);
         std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " KICK " + names[i] + ' ' + target->getNick() + ':';
         msg += SplitedMsg.size() > 3 ? SplitedMsg[3] : "for some reason";
+        msg += "\r\n";
         ch->broadcast(msg, c);
         ch->removeMember(target);
     }
 }
 
-
+void	Server::cmdinvite(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 3)
+        throw Myexception(ERR_NEEDMOREPARAMS);
+    Client *target = getClientByNickname(SplitedMsg[1]);
+    if (target == NULL)
+        throw Myexception(ERR_NOSUCHNICK);
+    if (channels.find(SplitedMsg[2]) == channels.end())
+        throw Myexception(ERR_NOSUCHCHANNEL);
+    Channel *ch = channels[SplitedMsg[2]];
+    if (!ch->isMember(c))
+        throw Myexception(ERR_NOTONCHANNEL);
+    if (ch->getMode() & MODE_INVONLY && !ch->isOperator(c))
+        throw Myexception(ERR_CHANOPRIVSNEEDED);
+    if (ch->isMember(target))
+        throw Myexception(ERR_USERONCHANNEL);
+    ch->addInvited(target);
+    std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " INVITE " + target->getNick() + ' ' + SplitedMsg[2] + "\r\n";
+    target->sendMsg(msg);
+}

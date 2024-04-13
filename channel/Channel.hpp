@@ -52,6 +52,7 @@ public:
     void                setMode(uint8_t mode);
     void                unsetMode(uint8_t mode);
     void                addMember(Client *client);
+    void                addInvited(Client *client);
     void                removeMember(Client *client);
     void                setOperator(Client *client);
 
