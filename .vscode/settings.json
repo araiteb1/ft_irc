@@ -3,6 +3,7 @@
         "*.hpp": "cpp",
         "*.tpp": "cpp",
         "iosfwd": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "vector": "cpp"
     }
 }
