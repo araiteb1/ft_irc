@@ -33,7 +33,7 @@ uint8_t             Channel::getMode() const
 	return (mode);
 }
 
-std::string const   &Channel::getModeStr() const
+std::string const   Channel::getModeStr() const
 {
 	std::string modeStr;
 	if (mode & MODE_INVONLY)
@@ -156,27 +156,17 @@ void                Channel::setOperator(Client *client)
 		member->second = true;
 }
 
-void				Channel::broadcast(std::string const &msg, Client *sender)
+void				Channel::broadcast(std::string const &msg)
 {
 	for (MemberMap::iterator i = members.begin(); i != members.end(); i++)
-		if (i->first != sender) i->first->sendMsg(msg);
+		i->first->sendMsg(msg);
 }
 
 std::ostream & operator<<(std::ostream & o, Channel const & src)
 {
-	MemberMap const &members = src.getMembers();
 	o << "channel name: " << src.getName();
-	o << "channel mode: ";
-	o << "i(" << (src.getMode() & MODE_INVONLY ? "true" : "false") << "), ";
-	o << "t(" << (src.getMode() & MODE_TOPREST ? "true" : "false") << "), ";
-	o << "k(" << (src.getMode() & MODE_CHANKEY ? "true" : "false") << "), ";
-	o << "l(" << (src.getMode() & MODE_USERLIM ? "true" : "false") << ")" << std::endl;
-	o << "member list :" << std::endl;
-	for (MemberMap::const_iterator i = members.begin(); i != members.end(); i++)
-	{
-		o << "Client >> " << i->first << " is operator: " << i->second << std::endl;
-	}
-	
+	o << "channel mode: " << src.getModeStr() << std::endl;
+	o << "member list :" << src.getMemberList() << std::endl;
 	return o;
 }
 

@@ -41,6 +41,8 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 				cmdinvite(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("TOPIC"))
 				cmdtopic(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("MODE"))
+				cmdmode(SplitedMsg, c);
 		}
 		else
 			throw Myexception(ERR_ALREADYREGISTRED);

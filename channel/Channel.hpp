@@ -36,7 +36,7 @@ public:
 
     std::string const   &getName() const;
     uint8_t             getMode() const;
-    std::string const   &getModeStr() const;
+    std::string const   getModeStr() const;
     std::string const   &getKey() const;
     std::string const   &getTopic() const;
     size_t              getLimit() const;
@@ -57,7 +57,7 @@ public:
     void                removeMember(Client *client);
     void                setOperator(Client *client);
 
-    void                broadcast(std::string const &msg, Client *sender);
+    void                broadcast(std::string const &msg);
 };
 
 std::ostream & operator<<(std::ostream & o, Channel const & src);
