@@ -36,6 +36,7 @@ public:
 
     std::string const   &getName() const;
     uint8_t             getMode() const;
+    std::string const   &getModeStr() const;
     std::string const   &getKey() const;
     std::string const   &getTopic() const;
     size_t              getLimit() const;

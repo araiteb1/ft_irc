@@ -34,6 +34,8 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
             throw Myexception(ERR_NOSUCHCHANNEL);
         if (channels.find(names[i]) == channels.end())
         {
+            if (names[i].find_first_of(",\a ") != std::string::npos)
+                throw Myexception(ERR_BADCHANMASK);
             ch = new Channel(names[i], keys[i], c);
             if (!keys[i].empty())
                 ch->setMode(MODE_CHANKEY);
@@ -52,9 +54,7 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
         }
         std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " JOIN " + names[i] + "\r\n";
         ch->broadcast(msg, c);
-        if (ch->getTopic().empty())
-            c->sendMsg(":" + name + " 331 " + c->getNick() + " " + names[i] + " :No topic is set\r\n");
-        else
+        if (!ch->getTopic().empty())
             c->sendMsg(":" + name + " 332 " + c->getNick() + " " + names[i] + " :" + ch->getTopic() + "\r\n");
         c->sendMsg(":" + name + " 353 " + c->getNick() + " = " + names[i] + " :" + ch->getMemberList() + "\r\n");
         c->sendMsg(":" + name + " 366 " + c->getNick() + " " + names[i] + " :End of /NAMES list\r\n");
@@ -122,17 +122,17 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 2)
         throw Myexception(ERR_NEEDMOREPARAMS);
-    Channel *ch = channels[SplitedMsg[1]];
-    if (!ch)
+    if (channels.find(SplitedMsg[1]) == channels.end())
         throw Myexception(ERR_NOSUCHCHANNEL);
+    Channel *ch = channels[SplitedMsg[1]];
     if (!ch->isMember(c))
         throw Myexception(ERR_NOTONCHANNEL);
     if (SplitedMsg.size() == 2)
     {
-        if (ch->getTopic().empty())
-            c->sendMsg(":" + name + " 331 " + c->getNick() + " " + SplitedMsg[1] + " :No topic is set\r\n");
-        else
-            c->sendMsg(":" + name + " 332 " + c->getNick() + " " + SplitedMsg[1] + " :" + ch->getTopic() + "\r\n");
+        std::string msg = ":" + name + " 331 " + c->getNick() + " " + SplitedMsg[1] + " :";
+        msg += ch->getTopic().empty() ? "No topic is set" : ch->getTopic();
+        msg += "\r\n";
+        c->sendMsg(msg);
     }
     else
     {
@@ -140,6 +140,76 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
             throw Myexception(ERR_CHANOPRIVSNEEDED);
         ch->setTopic(SplitedMsg[2]);
         std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " TOPIC " + SplitedMsg[1] + " :" + SplitedMsg[2] + "\r\n";
+        ch->broadcast(msg, c);
+    }
+}
+void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS);
+    if (channels.find(SplitedMsg[1]) == channels.end())
+        throw Myexception(ERR_NOSUCHCHANNEL);
+    Channel *ch = channels[SplitedMsg[1]];
+    if (!ch->isMember(c))
+        throw Myexception(ERR_NOTONCHANNEL);
+    if (SplitedMsg.size() == 2)
+    {
+        c->sendMsg(":" + name + " 324 " + c->getNick() + " " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n");
+    }
+    else
+    {
+        if (!ch->isOperator(c))
+            throw Myexception(ERR_CHANOPRIVSNEEDED);
+        if (SplitedMsg[2][0] == '+')
+        {
+            int arg = 3;
+            for (size_t i = 1; i < SplitedMsg[2].size(); i++)
+            {
+                if (SplitedMsg[2][i] == 'i')
+                    ch->setMode(MODE_INVONLY);
+                else if (SplitedMsg[2][i] == 't')
+                    ch->setMode(MODE_TOPREST);
+                else if (SplitedMsg[2][i] == 'k')
+                {
+                    if (SplitedMsg.size() < arg + 1)
+                        throw Myexception(ERR_NEEDMOREPARAMS);
+                    ch->setKey(SplitedMsg[arg++]);
+                    ch->setMode(MODE_CHANKEY);
+                }
+                else if (SplitedMsg[2][i] == 'l')
+                {
+                    if (SplitedMsg.size() < arg + 1)
+                        throw Myexception(ERR_NEEDMOREPARAMS);
+                    ch->setLimit(std::atoi(SplitedMsg[arg++].c_str()));
+                    ch->setMode(MODE_USERLIM);
+                }
+            }
+        }
+        else if (SplitedMsg[2][0] == '-')
+        {
+            for (size_t i = 1; i < SplitedMsg[2].size(); i++)
+            {
+                if (SplitedMsg[2][i] == 'i')
+                    ch->unsetMode(MODE_INVONLY);
+                else if (SplitedMsg[2][i] == 't')
+                    ch->unsetMode(MODE_TOPREST);
+                else if (SplitedMsg[2][i] == 'k')
+                {
+                    ch->setKey("");
+                    ch->unsetMode(MODE_CHANKEY);
+                }
+                else if (SplitedMsg[2][i] == 'l')
+                {
+                    ch->setLimit(0);
+                    ch->unsetMode(MODE_USERLIM);
+                }
+                else
+                    throw Myexception(ERR_UNKNOWNCOMMAND);
+            }
+        }
+        else
+            throw Myexception(ERR_UNKNOWNCOMMAND);
+        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " MODE " + SplitedMsg[1] + ' ' + SplitedMsg[2] + "\r\n";
         ch->broadcast(msg, c);
     }
 }

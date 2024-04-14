@@ -104,6 +104,7 @@ class Server {
 		void			cmdknick(std::vector<std::string> &SplitedMsg, Client *c);
 		void			cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdjoin(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdmode(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdkick(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdinvite(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdtopic(std::vector<std::string>& SplitedMsg, Client *c);

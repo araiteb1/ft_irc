@@ -33,6 +33,20 @@ uint8_t             Channel::getMode() const
 	return (mode);
 }
 
+std::string const   &Channel::getModeStr() const
+{
+	std::string modeStr;
+	if (mode & MODE_INVONLY)
+		modeStr += "i";
+	if (mode & MODE_TOPREST)
+		modeStr += "t";
+	if (mode & MODE_CHANKEY)
+		modeStr += "k";
+	if (mode & MODE_USERLIM)
+		modeStr += "l";
+	return (modeStr);
+}
+
 std::string const   &Channel::getKey() const
 {
 	return (key);
