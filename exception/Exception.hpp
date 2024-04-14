@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Exception.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:27:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 11:13:23 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/14 16:45:30 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ enum e_rronum{
     ERR_TOOMANYTARGETS = 407,
     ERR_PASSWDMISMATCH = 464,
     ERR_UNKNOWNCOMMAND = 421,
-    //  added by anammal
     ERR_NOSUCHCHANNEL = 403,
     ERR_CHANNELISFULL = 471,
     ERR_INVITEONLYCHAN = 473,
@@ -46,15 +45,10 @@ enum e_rronum{
     ERR_USERNOTINCHANNEL = 441,
     ERR_NOTONCHANNEL = 442,
     ERR_USERONCHANNEL = 443
-    // end
 };
 
 enum  e_repl{
-    RPL_AWAY = 301,
-    //  added by anammal
-    RPL_TOPIC = 332,
-    RPL_NAMREPLY = 353
-    // end
+    RPL_AWAY = 301
 };
 
 class Myexception : public std::exception{

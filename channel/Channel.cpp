@@ -156,6 +156,13 @@ void                Channel::setOperator(Client *client)
 		member->second = true;
 }
 
+void				Channel::unsetOperator(Client *client)
+{
+	MemberMap::iterator member = members.find(client);
+	if (member != members.end())
+		member->second = false;
+}
+
 void				Channel::broadcast(std::string const &msg)
 {
 	for (MemberMap::iterator i = members.begin(); i != members.end(); i++)

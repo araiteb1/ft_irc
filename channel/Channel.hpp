@@ -56,6 +56,7 @@ public:
     void                addInvited(Client *client);
     void                removeMember(Client *client);
     void                setOperator(Client *client);
+    void                unsetOperator(Client *client);
 
     void                broadcast(std::string const &msg);
 };

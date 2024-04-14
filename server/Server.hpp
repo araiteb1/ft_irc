@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 11:29:31 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/14 16:45:03 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-# define MAX 1024
+#define MAX 1024
 #define LIMITCNX 500
 
 #include <sys/ioctl.h>
