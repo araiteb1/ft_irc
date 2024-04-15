@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 10:52:14 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 16:32:37 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,14 @@ Server::~Server(){
 		it++;
 	}
 	this->clients.clear();
+	std::map<std::string, Channel *>::iterator it2 = this->channels.begin();
+	while (it2 != channels.end())
+	{
+		delete it2->second;
+		it2++;
+	}
+	channels.clear();	
+	close(server_fd);
 }
 
 

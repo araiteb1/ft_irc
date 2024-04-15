@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 13:38:28 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 16:26:50 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,6 +334,11 @@ void    Server::cmdpart(std::vector<std::string>& SplitedMsg, Client *c)
         msg += "\r\n";
         ch->broadcast(msg);
         ch->removeMember(c);
+        if (ch->getMembers().empty())
+        {
+            delete ch;
+            channels.erase(names[i]);
+        }
     }
 }
 
