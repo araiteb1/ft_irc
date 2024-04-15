@@ -13,7 +13,7 @@
 class Client;
 
 typedef std::map<Client *, bool> MemberMap;
-typedef std::map<int, Client *> ClientMap;
+typedef std::vector<std::string> InviteList;
 
 class Channel
 {
@@ -21,9 +21,9 @@ class Channel
     uint8_t             mode;
     std::string         key;
     std::string         topic;
-    size_t             limit;
+    size_t              limit;
     MemberMap           members;
-    ClientMap           invited;
+    InviteList          invited;
 
     Channel(void);
     Channel & operator=(Channel const & src);
@@ -41,10 +41,10 @@ public:
     std::string const   &getTopic() const;
     size_t              getLimit() const;
     MemberMap const     &getMembers() const;
-    ClientMap const     &getInvited() const;
+    InviteList const    &getInvited() const;
     std::string         getMemberList() const;
     bool                isMember(Client *client) const;
-    bool                isInvited(Client *client) const;
+    bool                isInvited(std::string const &nick) const;
     bool                isOperator(Client *client) const;
 
     void                setKey(std::string const &key);
@@ -53,8 +53,9 @@ public:
     void                setMode(uint8_t mode);
     void                unsetMode(uint8_t mode);
     void                addMember(Client *client);
-    void                addInvited(Client *client);
+    void                addInvited(std::string const &nick);
     void                removeMember(Client *client);
+    void                removeInvited(std::string const &nick);
     void                setOperator(Client *client);
     void                unsetOperator(Client *client);
 

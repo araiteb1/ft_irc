@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 16:26:50 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 17:01:33 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,9 +242,12 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
                 throw Myexception(ERR_BADCHANNELKEY);
             if (ch->getMode() & MODE_USERLIM && ch->getLimit() <= ch->getMembers().size())
                 throw Myexception(ERR_CHANNELISFULL);
-            if (ch->getMode() & MODE_INVONLY && !ch->isInvited(c))
+            bool invited = ch->isInvited(c->getNick());
+            if (ch->getMode() & MODE_INVONLY && !invited)
                 throw Myexception(ERR_INVITEONLYCHAN);
             ch->addMember(c);
+            if (invited)
+                ch->removeInvited(c->getNick());
         }
         std::string msg = c->getIdent() + " JOIN " + names[i] + "\r\n";
         ch->broadcast(msg);
@@ -358,7 +361,7 @@ void	Server::cmdinvite(std::vector<std::string>& SplitedMsg, Client *c)
         throw Myexception(ERR_CHANOPRIVSNEEDED);
     if (ch->isMember(target))
         throw Myexception(ERR_USERONCHANNEL);
-    ch->addInvited(target);
+    ch->addInvited(target->getNick());
     std::string msg = c->getIdent() + " INVITE " + target->getNick() + ' ' + SplitedMsg[2] + "\r\n";
     target->sendMsg(msg);
 }

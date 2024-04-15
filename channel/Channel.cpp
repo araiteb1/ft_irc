@@ -13,7 +13,7 @@ Channel::Channel(Channel const & src)
 {
 	// std::cout << "Channel: Copy constructor called" << std::endl;
 	members.insert(src.getMembers().begin(), src.getMembers().end());
-	invited.insert(src.getInvited().begin(), src.getInvited().end());
+	invited.assign(src.getInvited().begin(), src.getInvited().end());
 	return ;
 }
 
@@ -67,7 +67,7 @@ MemberMap const     &Channel::getMembers() const
 	return (members);
 }
 
-ClientMap const     &Channel::getInvited() const
+InviteList const    &Channel::getInvited() const
 {
 	return (invited);
 }
@@ -100,9 +100,9 @@ bool                Channel::isMember(Client *client) const
 	return (members.find(client) != members.end());
 }
 
-bool                Channel::isInvited(Client *client) const
+bool                Channel::isInvited(std::string const &nick) const
 {
-	return (invited.find(client->getFd()) != invited.end());
+	return (std::find(invited.begin(), invited.end(), nick) != invited.end());
 }
 
 void                Channel::setKey(std::string const &key)
@@ -137,9 +137,9 @@ void                Channel::addMember(Client *client)
 		members.insert(std::make_pair(client, false));
 }
 
-void				Channel::addInvited(Client *client)
+void				Channel::addInvited(std::string const &nick)
 {
-	invited.insert(std::make_pair(client->getFd(), client));
+	invited.push_back(nick);
 }
 
 void				Channel::removeMember(Client *client)
@@ -147,6 +147,13 @@ void				Channel::removeMember(Client *client)
 	MemberMap::iterator member = members.find(client);
 	if (member != members.end())
 		members.erase(member);
+}
+
+void				Channel::removeInvited(std::string const &nick)
+{
+	InviteList::iterator i = std::find(invited.begin(), invited.end(), nick);
+	if (i != invited.end())
+		invited.erase(i);
 }
 
 void                Channel::setOperator(Client *client)
