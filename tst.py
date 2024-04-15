@@ -27,7 +27,6 @@ async def connect_socket(i):
             await asyncio.sleep(DELAY)
             writer.write(f"PRIVMSG #general :A7san Server Fl3alam{i}\r\n".encode())
             await writer.drain()
-
     except asyncio.CancelledError:
         print(f"Task {i} was cancelled.")
     except Exception as e:

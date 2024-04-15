@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:28:26 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 11:12:22 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 11:56:19 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,25 +64,25 @@ void    Client::setFdUser(int FdUser)
 	fd = FdUser;
 }
 
-std::string     Client::getNick() { return (nickname); }
+std::string &     Client::getNick() { return (nickname); }
 
-std::string     Client::geTPass(){ return (pass); }
+std::string &     Client::geTPass(){ return (pass); }
 
 void	Client::setusename(std::string val) { this->username = val; }
 void	Client::sethostname(std::string val) { this->hostname = val; }
 void	Client::setservername(std::string val) { this->servername = val; }
 void	Client::setrealname(std::string val) { this->realname = val; }
 
-std::string		Client::getusername(){
+std::string &		Client::getusername(){
 	return this->username;
 }
-std::string		Client::gethostname(){
+std::string &		Client::gethostname(){
 	return this->hostname;
 }
-std::string		Client::getservername(){
+std::string &		Client::getservername(){
 	return this->servername;
 }
-std::string		Client::getrealname(){
+std::string &		Client::getrealname(){
 	return this->realname;
 }
 
@@ -91,7 +91,7 @@ int             Client::getFd() {
 }
 
 std::string		Client::getIdent(){
-	return (this->getNick() + "!" + this->gethostname() + "@localhost");
+	return (':' + getNick() + "!" + getusername() + gethostname());
 }
 
 void			Client::sendMsg(std::string msg)

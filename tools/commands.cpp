@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 12:13:58 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 13:38:28 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,12 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 		{
 			if(!SplitedMsg[0].compare("PRIVMSG"))
 				cmdprivmsg(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("NOTICE"))
+				cmdnotice(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("JOIN"))
 				cmdjoin(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("LIST"))
+				cmdlist(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("KICK"))
 				cmdkick(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("PART"))
@@ -67,7 +71,6 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 	Client *tmpClient;
 	int flag = 0;
 
-	std::cout << "cmdknick" << std::endl;
 	if (!c->getNick().empty())
 		flag = 1;
 	if (SplitedMsg.size() != 2 ||  SplitedMsg[1].empty())
@@ -100,7 +103,6 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 
 void	Server::cmdpass(std::vector<std::string>& SplitedMsg, Client *c)
 {
-	std::cout << "cmdpass" << std::endl;
 	if (this->IsAuthorized(*c))
 		throw Myexception(ERR_ALREADYREGISTRED);
 	if (SplitedMsg.size() != 2)
@@ -110,7 +112,6 @@ void	Server::cmdpass(std::vector<std::string>& SplitedMsg, Client *c)
 
 void	Server::cmduser(Client *c, std::vector<std::string> &SplitedMsg)
 {
-	std::cout << "cmduser" << std::endl;
 	if (this->IsAuthorized(*c) || !c->getusername().empty())
 		throw Myexception(ERR_ALREADYREGISTRED);
 	if (SplitedMsg.size() != 5)
@@ -163,7 +164,7 @@ void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
             Channel *ch = channels[targets[i]];
             if (!ch->isMember(c))
                 throw Myexception(ERR_CANNOTSENDTOCHAN);
-            std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " PRIVMSG " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
+            std::string msg = c->getIdent() + " PRIVMSG " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
             ch->broadcast(msg);
         }
         else
@@ -171,7 +172,7 @@ void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
             Client *target = getClientByNickname(targets[i]);
             if (!target)
                 throw Myexception(ERR_NOSUCHNICK);
-            std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " PRIVMSG " + target->getNick() + " :" + SplitedMsg[2] + "\r\n";
+            std::string msg = c->getIdent() + " PRIVMSG " + target->getNick() + " :" + SplitedMsg[2] + "\r\n";
             target->sendMsg(msg);
         }
     }
@@ -191,7 +192,7 @@ void    Server::cmdnotice(std::vector<std::string>& SplitedMsg, Client *c)
             Channel *ch = channels[targets[i]];
             if (!ch->isMember(c))
                 return ;
-            std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " NOTICE " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
+            std::string msg = c->getIdent() + " NOTICE " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
             ch->broadcast(msg);
         }
         else
@@ -199,7 +200,7 @@ void    Server::cmdnotice(std::vector<std::string>& SplitedMsg, Client *c)
             Client *target = getClientByNickname(targets[i]);
             if (!target)
                 return ;
-            std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " NOTICE " + target->getNick() + " :" + SplitedMsg[2] + "\r\n";
+            std::string msg = c->getIdent() + " NOTICE " + target->getNick() + " :" + SplitedMsg[2] + "\r\n";
             target->sendMsg(msg);
         }
     }
@@ -245,7 +246,7 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
                 throw Myexception(ERR_INVITEONLYCHAN);
             ch->addMember(c);
         }
-        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " JOIN " + names[i] + "\r\n";
+        std::string msg = c->getIdent() + " JOIN " + names[i] + "\r\n";
         ch->broadcast(msg);
         if (!ch->getTopic().empty())
             c->sendMsg(name + " 332 " + c->getNick() + " " + names[i] + " :" + ch->getTopic() + "\r\n");
@@ -308,7 +309,7 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
             throw Myexception(ERR_NOSUCHNICK);
         if (!ch->isMember(target))
             throw Myexception(ERR_USERNOTINCHANNEL);
-        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " KICK " + names[i] + ' ' + target->getNick() + ':';
+        std::string msg = c->getIdent() + " KICK " + names[i] + ' ' + target->getNick() + ':';
         msg += SplitedMsg.size() > 3 ? SplitedMsg[3] : "for some reason";
         msg += "\r\n";
         ch->broadcast(msg);
@@ -328,7 +329,7 @@ void    Server::cmdpart(std::vector<std::string>& SplitedMsg, Client *c)
         Channel *ch = channels[names[i]];
         if (!ch->isMember(c))
             throw Myexception(ERR_NOTONCHANNEL);
-        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " PART " + names[i];
+        std::string msg = c->getIdent() + " PART " + names[i];
         msg += SplitedMsg.size() > 2 ? " :" + SplitedMsg[2] : "";
         msg += "\r\n";
         ch->broadcast(msg);
@@ -353,7 +354,7 @@ void	Server::cmdinvite(std::vector<std::string>& SplitedMsg, Client *c)
     if (ch->isMember(target))
         throw Myexception(ERR_USERONCHANNEL);
     ch->addInvited(target);
-    std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " INVITE " + target->getNick() + ' ' + SplitedMsg[2] + "\r\n";
+    std::string msg = c->getIdent() + " INVITE " + target->getNick() + ' ' + SplitedMsg[2] + "\r\n";
     target->sendMsg(msg);
 }
 
@@ -378,7 +379,7 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
         if (ch->getMode() & MODE_TOPREST && !ch->isOperator(c))
             throw Myexception(ERR_CHANOPRIVSNEEDED);
         ch->setTopic(SplitedMsg[2]);
-        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " TOPIC " + SplitedMsg[1] + " :" + SplitedMsg[2] + "\r\n";
+        std::string msg = c->getIdent() + " TOPIC " + SplitedMsg[1] + " :" + SplitedMsg[2] + "\r\n";
         ch->broadcast(msg);
     }
 }
@@ -472,7 +473,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             else
                 throw Myexception(ERR_UNKNOWNCOMMAND);
         }
-        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " MODE +" + ch->getModeStr() + "\r\n";
+        std::string msg = c->getIdent() + " MODE +" + ch->getModeStr() + "\r\n";
         ch->broadcast(msg);
     }
 }
