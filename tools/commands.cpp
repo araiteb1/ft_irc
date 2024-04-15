@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 09:45:18 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 09:57:28 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,12 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 		{
 			if(!SplitedMsg[0].compare("PRIVMSG"))
 				cmdprivmsg(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("NOTICE"))
+				cmdnotice(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("JOIN"))
 				cmdjoin(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("LIST"))
+				cmdlist(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("KICK"))
 				cmdkick(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("PART"))
