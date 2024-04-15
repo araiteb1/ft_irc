@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/14 19:04:43 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 09:45:18 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 				cmdjoin(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("KICK"))
 				cmdkick(SplitedMsg, c);
+			else if(!SplitedMsg[0].compare("PART"))
+				cmdpart(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("INVITE"))
 				cmdinvite(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("TOPIC"))
@@ -176,6 +178,34 @@ void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
     }
 }
 
+void    Server::cmdnotice(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 3)
+        return ;
+    std::vector<std::string> targets = split(SplitedMsg[1], ',');
+    for (size_t i = 0; i < targets.size(); i++)
+    {
+        if (targets[i][0] == '#')
+        {
+            if (channels.find(targets[i]) == channels.end())
+                return ;
+            Channel *ch = channels[targets[i]];
+            if (!ch->isMember(c))
+                return ;
+            std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " NOTICE " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
+            ch->broadcast(msg);
+        }
+        else
+        {
+            Client *target = getClientByNickname(targets[i]);
+            if (!target)
+                return ;
+            std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " NOTICE " + target->getNick() + " :" + SplitedMsg[2] + "\r\n";
+            target->sendMsg(msg);
+        }
+    }
+}
+
 void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
 {
 	if (SplitedMsg.size() < 2)
@@ -226,6 +256,31 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
     }
 }
 
+void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() == 1)
+    {
+        for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+        {
+            Channel *ch = it->second;
+            c->sendMsg(name + " 322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
+        }
+        c->sendMsg(name + " 323 " + c->getNick() + " :End of /LIST\r\n");
+    }
+    else
+    {
+        std::vector<std::string> names = split(SplitedMsg[1], ',');
+        for (size_t i = 0; i < names.size(); i++)
+        {
+            if (channels.find(names[i]) == channels.end())
+                throw Myexception(ERR_NOSUCHCHANNEL);
+            Channel *ch = channels[names[i]];
+            c->sendMsg(name + " 322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
+        }
+        c->sendMsg(name + " 323 " + c->getNick() + " :End of /LIST\r\n");
+    }
+}
+
 void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 3)
@@ -259,6 +314,26 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
         msg += "\r\n";
         ch->broadcast(msg);
         ch->removeMember(target);
+    }
+}
+
+void    Server::cmdpart(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS);
+    std::vector<std::string> names = split(SplitedMsg[1], ',');
+    for (size_t i = 0; i < names.size(); i++)
+    {
+        if (channels.find(names[i]) == channels.end())
+            throw Myexception(ERR_NOSUCHCHANNEL);
+        Channel *ch = channels[names[i]];
+        if (!ch->isMember(c))
+            throw Myexception(ERR_NOTONCHANNEL);
+        std::string msg = ':' + c->getNick() + '!' + c->getusername() + '@' + c->gethostname() + " PART " + names[i];
+        msg += SplitedMsg.size() > 2 ? " :" + SplitedMsg[2] : "";
+        msg += "\r\n";
+        ch->broadcast(msg);
+        ch->removeMember(c);
     }
 }
 

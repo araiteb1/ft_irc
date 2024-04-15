@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/14 16:45:03 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 09:41:19 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,12 @@ class Server {
 		void			cmdpass(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdknick(std::vector<std::string> &SplitedMsg, Client *c);
 		void			cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdnotice(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdjoin(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdlist(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdmode(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdkick(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdpart(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdinvite(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdtopic(std::vector<std::string>& SplitedMsg, Client *c);
 
