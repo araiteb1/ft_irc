@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 09:45:18 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 12:13:58 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 		tmpClient = this->getClientByNickname(SplitedMsg[1]);
 		if (tmpClient && (tmpClient->getFd() != c->getFd() || !SplitedMsg[1].compare("Bot")))
 			throw Myexception(ERR_NICKNAMEINUSE);
-		std::cout << SplitedMsg[1] << std::endl; // is empty !!
 		c->seTNick(SplitedMsg[1]);
 		if (this->IsAuthorized(*c) == 2)
 			throw  Myexception(ERR_PASSWDMISMATCH);

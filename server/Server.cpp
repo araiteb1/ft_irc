@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 12:36:12 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 10:52:14 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +247,7 @@ int 	Server::checkmsg(int fd){
 		{
 			if (errno != EWOULDBLOCK)
 			{
-				std::cout << "Failed at receiving msg : " << errno << std::endl; 
+				std::cout << "Failed at receiving msg : " << strerror( errno )  << std::endl; 
 				return 0;
 			}
 			continue ;
