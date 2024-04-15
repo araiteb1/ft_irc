@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 14:08:00 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 14:12:58 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 14:53:10 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ void 	Bot::traitResvedData(std::string &msg, int client_fd) {
     std::cout << msg;
     splitCommand (msg, ':', tmp1);
     command = tmp1[1];
-    command = command.substr(0, command.size()-1); 
-    splitCommand (tmp1[0], ' ', tmp2);
+    command = command.substr(0, command.size()-2); 
+    splitCommand (tmp1[0], '!', tmp2);
     sender = tmp2[0];
     if (!command.empty() && !command.compare("time")) {
         sprintf(message, "privmsg %s :%s\r\n", sender.c_str(), returntime().c_str());

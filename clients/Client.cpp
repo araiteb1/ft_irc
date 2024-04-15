@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:28:26 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 11:56:19 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 15:02:10 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int             Client::getFd() {
 }
 
 std::string		Client::getIdent(){
-	return (':' + getNick() + "!" + getusername() + gethostname());
+	return (':' + getNick() + "!" + getusername()+ "@" + gethostname());
 }
 
 void			Client::sendMsg(std::string msg)
