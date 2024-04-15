@@ -60,6 +60,7 @@ public:
     void                unsetOperator(Client *client);
 
     void                broadcast(std::string const &msg);
+    void                broadcast(std::string const &msg, Client *sender);
 };
 
 std::ostream & operator<<(std::ostream & o, Channel const & src);

@@ -44,6 +44,10 @@ std::string const   Channel::getModeStr() const
 		modeStr += "k";
 	if (mode & MODE_USERLIM)
 		modeStr += "l";
+	if (mode & MODE_CHANKEY)
+		modeStr += ' ' + key;
+	if (mode & MODE_USERLIM)
+		modeStr += ' ' + limit;
 	return (modeStr);
 }
 
@@ -174,6 +178,15 @@ void				Channel::broadcast(std::string const &msg)
 {
 	for (MemberMap::iterator i = members.begin(); i != members.end(); i++)
 		i->first->sendMsg(msg);
+}
+
+void                Channel::broadcast(std::string const &msg, Client *sender)
+{
+		for (MemberMap::iterator i = members.begin(); i != members.end(); i++)
+		{
+			if (i->first != sender)
+				i->first->sendMsg(msg);
+		}
 }
 
 std::ostream & operator<<(std::ostream & o, Channel const & src)

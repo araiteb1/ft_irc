@@ -4,6 +4,7 @@
         "*.tpp": "cpp",
         "iosfwd": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "ostream": "cpp"
     }
 }

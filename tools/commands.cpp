@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 17:01:33 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 20:51:28 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void	Server::cmduser(Client *c, std::vector<std::string> &SplitedMsg)
 	if (found != std::string::npos)
 		throw Myexception(ERR_ERRONEUSNICKNAME);
 	c->setusename(SplitedMsg[1]);
-	c->sethostname(SplitedMsg[2]);
+	// c->sethostname(SplitedMsg[2]);
 	c->setservername(SplitedMsg[3]);
 	c->setrealname(SplitedMsg[4]);
 	if (this->IsAuthorized(*c) == 2)
@@ -402,7 +402,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
     if (!ch->isMember(c))
         throw Myexception(ERR_NOTONCHANNEL);
     if (SplitedMsg.size() == 2)
-        c->sendMsg(name + " 324 " + c->getNick() + " " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n");
+        c->sendMsg(name + "324 " + c->getNick() + " " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n");
     else
     {
         if (!ch->isOperator(c))
@@ -414,7 +414,10 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
         for (size_t i = 0; i < SplitedMsg[2].size(); i++)
         {
             if (SplitedMsg[2][i] == '-' || SplitedMsg[2][i] == '+')
-                operation = SplitedMsg[2][i++];
+            {
+                operation = SplitedMsg[2][i];
+                continue ;
+            }
             if (operation == '+')
             {
                 if (SplitedMsg[2][i] == 'i')
@@ -481,7 +484,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             else
                 throw Myexception(ERR_UNKNOWNCOMMAND);
         }
-        std::string msg = c->getIdent() + " MODE +" + ch->getModeStr() + "\r\n";
+        std::string msg = c->getIdent() + " MODE " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n";
         ch->broadcast(msg);
     }
 }

@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 16:32:37 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/15 20:19:42 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,13 +228,14 @@ int 		Server::acceptingData(){
 			break ;
 		}
 		Client *c = new Client(newfd);
+		c->sethostname(inet_ntoa(newAddresse.sin_addr));
 		this->clients.insert(std::pair<int, Client *>(newfd, c));
 		users[user_num].fd = newfd;
 		users[user_num]. events = POLLIN;
 		user_num++;
 
-        sendResponce(newfd, this->name + "NOTICE AUTH :*** Looking up your hostname . . .\n");
-	    sendResponce(newfd, this->name + "NOTICE AUTH :*** Found your hostname\n");
+        // sendResponce(newfd, this->name + "NOTICE AUTH :*** Looking up your hostname . . .\n");
+	    // sendResponce(newfd, this->name + "NOTICE AUTH :*** Found your hostname\n");
 	} while (newfd != -1);
 	return 1;
 }

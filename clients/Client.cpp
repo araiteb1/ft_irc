@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:28:26 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 15:02:10 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 20:06:55 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,6 @@ std::string		Client::getIdent(){
 
 void			Client::sendMsg(std::string msg)
 {
+	std::cout << msg << std::endl;
 	send(fd, msg.c_str(), msg.length(), 0);
 }
