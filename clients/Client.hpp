@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:28:14 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 11:25:01 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/15 11:54:44 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include<string>
 #include <vector>
 #include "../server/Server.hpp"
+
 class Client
 {
 	private:
@@ -45,12 +46,12 @@ class Client
 		
 		 
 		int				getFd();
-		std::string		getNick();
-		std::string		geTPass();
-		std::string		getusername();
-		std::string		gethostname();
-		std::string		getservername();
-		std::string		getrealname();
+		std::string		&getNick();
+		std::string		&geTPass();
+		std::string		&getusername();
+		std::string		&gethostname();
+		std::string		&getservername();
+		std::string		&getrealname();
 		
 		std::string 	getIdent();
 
