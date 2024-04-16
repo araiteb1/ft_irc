@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 10:32:15 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/16 10:01:11 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,9 @@ class Server {
 		void			cmdpart(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdinvite(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdtopic(std::vector<std::string>& SplitedMsg, Client *c);
+
+		void			cmdquit(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdquit(Client *c, std::string reason);
 
         Client*			getClientByFd(int fdUser);
 		Client*			getClientByNickname(std::string nickname);

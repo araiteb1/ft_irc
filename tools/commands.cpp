@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 02:06:47 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/16 10:40:45 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 				cmdtopic(SplitedMsg, c);
 			else if(!SplitedMsg[0].compare("MODE"))
 				cmdmode(SplitedMsg, c);
+            else if(!SplitedMsg[0].compare("QUIT"))
+                cmdquit(SplitedMsg, c);
 		}
 		else
 			throw Myexception(ERR_ALREADYREGISTRED);
@@ -83,6 +85,7 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 		tmpClient = this->getClientByNickname(SplitedMsg[1]);
 		if (tmpClient && (tmpClient->getFd() != c->getFd() || !SplitedMsg[1].compare("Bot")))
 			throw Myexception(ERR_NICKNAMEINUSE);
+        std::string msg = c->getIdent() + " NICK " + SplitedMsg[1] + "\r\n";
 		c->seTNick(SplitedMsg[1]);
 		if (this->IsAuthorized(*c) == 2)
 			throw  Myexception(ERR_PASSWDMISMATCH);
@@ -98,6 +101,15 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 				+ c->getNick() + " :This server was created "
 				+ this->birthday);
 		}
+        else if (IsAuthorized(*c) == 1 && flag)
+        {
+            for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+            {
+                Channel *ch = it->second;
+                if (ch->isMember(c))
+                    ch->broadcast(msg);
+            }
+        }
 	}
 }
 
@@ -523,5 +535,36 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
         }
         msg += "\r\n";
         ch->broadcast(msg);
+    }
+}
+
+void	Server::cmdquit(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    std::string msg = c->getIdent() + " QUIT : ";
+    msg += SplitedMsg.size() > 1 ? SplitedMsg[1] : "Client Quit";
+    msg += "\r\n";
+    for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+    {
+        Channel *ch = it->second;
+        if (ch->isMember(c))
+        {
+            ch->removeMember(c);
+            ch->broadcast(msg);
+        }
+    }
+}
+
+void	Server::cmdquit(Client *c, std::string reason)
+{
+
+    std::string msg = c->getIdent() + " QUIT : " + reason + "\r\n";
+    for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+    {
+        Channel *ch = it->second;
+        if (ch->isMember(c))
+        {
+            ch->removeMember(c);
+            ch->broadcast(msg);
+        }
     }
 }
