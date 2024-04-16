@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 12:18:56 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/16 13:01:57 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,12 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
                 sendResponce(c->getFd(), this->name + "003 "
                     + c->getNick() + " :This server was created "
                     + this->birthday);
+                sendResponce(c->getFd(), this->name + "004 "
+                    + c->getNick() + " : "
+                    + "0.1" + " iktlo klo\r\n");
+                sendResponce(c->getFd(), this->name + "005 "
+                    + "PREFIX=(o)@ CHANTYPES=# :are supported by this server\r\n");
+                sendResponce(c->getFd(), this->name + "376 " + c->getNick() + " :End of /MOTD command.\n");
             }
 		}
 	}
@@ -337,7 +343,7 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
         msg += SplitedMsg.size() > 3 ? SplitedMsg[3] : "for some reason";
         msg += "\r\n";
         ch->broadcast(msg);
-        ch->removeMember(target);0
+        ch->removeMember(target);
     }
 }
 
