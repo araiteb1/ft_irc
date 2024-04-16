@@ -6,7 +6,7 @@
 #    By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/19 12:15:46 by araiteb           #+#    #+#              #
-#    Updated: 2024/03/20 14:50:02 by araiteb          ###   ########.fr        #
+#    Updated: 2024/04/16 18:58:01 by araiteb          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ SRCS = main.cpp ./clients/Client.cpp ./server/Server.cpp ./tools/ft_split.cpp  .
 SRCSB = ./bonus/main_bonus.cpp ./bonus/Bot.cpp ./bonus/Bot_commands.cpp ./tools/ft_split.cpp  ./message/Message.cpp
 
 CC = c++ 
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address
 OBJS = $(SRCS:.cpp=.o)
 OBJSB = $(SRCSB:.cpp=.o)
 

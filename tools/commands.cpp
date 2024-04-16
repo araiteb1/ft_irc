@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 13:01:57 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/16 18:55:20 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 				cmdmode(SplitedMsg, c);
             else if(!SplitedMsg[0].compare("QUIT"))
                 cmdquit(SplitedMsg, c);
+            
 		}
 		else
 			throw Myexception(ERR_ALREADYREGISTRED);
@@ -75,13 +76,13 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 
 	if (!c->getNick().empty())
 		flag = 1;
-	if (SplitedMsg.size() != 2 ||  SplitedMsg[1].empty())
+	if (SplitedMsg.size() > 0 && (SplitedMsg.size() != 2 ||  SplitedMsg[1].empty()))
 		throw Myexception(ERR_NONICKNAMEGIVEN);
 	std::size_t found = SplitedMsg[1].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]`|^{}");
 	if (found != std::string::npos)
 		throw Myexception(ERR_ERRONEUSNICKNAME);
-	if (!SplitedMsg[1].empty() && SplitedMsg[2].empty())
-	{
+	if (!SplitedMsg[1].empty())
+	{    
 		tmpClient = this->getClientByNickname(SplitedMsg[1]);
 		if (tmpClient && (tmpClient->getFd() != c->getFd() || !SplitedMsg[1].compare("Bot")))
 			throw Myexception(ERR_NICKNAMEINUSE);

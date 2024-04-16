@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:11:12 by araiteb           #+#    #+#             */
-/*   Updated: 2024/03/20 12:44:06 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/16 18:47:18 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void    splitCommand(std::string str, char oper, std::vector<std::string> &Split
 	int end = 0;
 	int len = str.length();
 
-	
+
 	while(i <= len)
 	{
 		if ((str[i] == oper) || (i == len))

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 10:02:14 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/16 17:59:16 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,9 +249,9 @@ int 	Server::checkmsg(int fd){
 	std::string	msg;
 
 	msg = "";
-	memset(buffer, 0, sizeof(buffer));
 	do
 	{
+		memset(buffer, 0, sizeof(buffer));
 		rec = recv(fd, buffer, sizeof(buffer), 0);
 		if (rec < 0)
 		{
@@ -278,8 +278,10 @@ int 	Server::checkmsg(int fd){
 			TraiteMessage(mesg);
 			return 1;
 		}
-		else
+		else{
+			
 			return 1 ;
+		}
 	}while(1); // end of accept function
 	return 1;
 }
