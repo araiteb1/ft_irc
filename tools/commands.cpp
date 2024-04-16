@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 10:40:45 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/16 12:18:56 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,27 +89,30 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 		c->seTNick(SplitedMsg[1]);
 		if (this->IsAuthorized(*c) == 2)
 			throw  Myexception(ERR_PASSWDMISMATCH);
-		if (this->IsAuthorized(*c) == 1 && !flag)
+		if (this->IsAuthorized(*c) == 1)
 		{
-			sendResponce(c->getFd(), this->name + "001 "
-				+ c->getNick() + " :Welcome to the Internet Relay Network "
-				+ c->getIdent() + "\n");
-			sendResponce(c->getFd(), this->name + "002 "
-				+ c->getNick() + " :Your host is "
-				+ this->name.substr(1) + "running on version 0.1 \n");
-			sendResponce(c->getFd(), this->name + "003 "
-				+ c->getNick() + " :This server was created "
-				+ this->birthday);
-		}
-        else if (IsAuthorized(*c) == 1 && flag)
-        {
-            for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+            if (flag)
             {
-                Channel *ch = it->second;
-                if (ch->isMember(c))
-                    ch->broadcast(msg);
+                for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+                {
+                    Channel *ch = it->second;
+                    if (ch->isMember(c))
+                        ch->broadcast(msg);
+                }
             }
-        }
+            else
+            {
+                sendResponce(c->getFd(), this->name + "001 "
+                    + c->getNick() + " :Welcome to the Internet Relay Network "
+                    + c->getIdent() + "\n");
+                sendResponce(c->getFd(), this->name + "002 "
+                    + c->getNick() + " :Your host is "
+                    + this->name.substr(1) + "running on version 0.1 \n");
+                sendResponce(c->getFd(), this->name + "003 "
+                    + c->getNick() + " :This server was created "
+                    + this->birthday);
+            }
+		}
 	}
 }
 
@@ -270,10 +273,10 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
         std::string msg = c->getIdent() + " JOIN " + names[i] + "\r\n";
         ch->broadcast(msg);
         if (!ch->getTopic().empty())
-            c->sendMsg(name + " 332 " + c->getNick() + " " + names[i] + " :" + ch->getTopic() + "\r\n");
-        c->sendMsg(name + " MODE " + names[i] + " +" + ch->getModeStr() + "\r\n");
-        c->sendMsg(name + " 353 " + c->getNick() + " = " + names[i] + " :" + ch->getMemberList() + "\r\n");
-        c->sendMsg(name + " 366 " + c->getNick() + " " + names[i] + " :End of /NAMES list\r\n");
+            c->sendMsg(name + "332 " + c->getNick() + " " + names[i] + " :" + ch->getTopic() + "\r\n");
+        c->sendMsg(name + "MODE " + names[i] + " +" + ch->getModeStr() + "\r\n");
+        c->sendMsg(name + "353 " + c->getNick() + " = " + names[i] + " :" + ch->getMemberList() + "\r\n");
+        c->sendMsg(name + "366 " + c->getNick() + " " + names[i] + " :End of /NAMES list\r\n");
     }
 }
 
@@ -284,9 +287,9 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
         for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
         {
             Channel *ch = it->second;
-            c->sendMsg(name + " 322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
+            c->sendMsg(name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
         }
-        c->sendMsg(name + " 323 " + c->getNick() + " :End of /LIST\r\n");
+        c->sendMsg(name + "323 " + c->getNick() + " :End of /LIST\r\n");
     }
     else
     {
@@ -296,9 +299,9 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
             if (channels.find(names[i]) == channels.end())
                 throw Myexception(ERR_NOSUCHCHANNEL);
             Channel *ch = channels[names[i]];
-            c->sendMsg(name + " 322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
+            c->sendMsg(name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
         }
-        c->sendMsg(name + " 323 " + c->getNick() + " :End of /LIST\r\n");
+        c->sendMsg(name + "323 " + c->getNick() + " :End of /LIST\r\n");
     }
 }
 
@@ -330,11 +333,11 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
             throw Myexception(ERR_NOSUCHNICK);
         if (!ch->isMember(target))
             throw Myexception(ERR_USERNOTINCHANNEL);
-        std::string msg = c->getIdent() + " KICK " + names[i] + ' ' + target->getNick() + ':';
+        std::string msg = c->getIdent() + " KICK " + names[i] + ' ' + target->getNick() + " :";
         msg += SplitedMsg.size() > 3 ? SplitedMsg[3] : "for some reason";
         msg += "\r\n";
         ch->broadcast(msg);
-        ch->removeMember(target);
+        ch->removeMember(target);0
     }
 }
 
@@ -395,10 +398,12 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
         throw Myexception(ERR_NOTONCHANNEL);
     if (SplitedMsg.size() == 2)
     {
-        std::string msg = name + " 331 " + c->getNick() + " " + SplitedMsg[1] + " :";
-        msg += ch->getTopic().empty() ? "No topic is set" : ch->getTopic();
-        msg += "\r\n";
-        c->sendMsg(msg);
+        std::string msg = name;
+        if (ch->getTopic().empty())
+            msg +=  "331 " + c->getNick() + " " + SplitedMsg[1] + " :No topic is set";
+        else
+            msg +=  "332 " + c->getNick() + " " + SplitedMsg[1] + " :" + ch->getTopic();
+        c->sendMsg(msg + "\r\n");
     }
     else
     {
@@ -551,6 +556,11 @@ void	Server::cmdquit(std::vector<std::string>& SplitedMsg, Client *c)
             ch->removeMember(c);
             ch->broadcast(msg);
         }
+        if (ch->getMembers().empty())
+        {
+            delete ch;
+            channels.erase(ch->getName());
+        }
     }
 }
 
@@ -565,6 +575,11 @@ void	Server::cmdquit(Client *c, std::string reason)
         {
             ch->removeMember(c);
             ch->broadcast(msg);
+        }
+        if (ch->getMembers().empty())
+        {
+            delete ch;
+            channels.erase(ch->getName());
         }
     }
 }
