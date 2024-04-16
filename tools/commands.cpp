@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 20:51:28 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/16 02:06:47 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,12 @@ void	Server::cmduser(Client *c, std::vector<std::string> &SplitedMsg)
 		sendResponce(c->getFd(), this->name + "003 "
 			+ c->getNick() + " :This server was created "
 			+ this->birthday);
+        sendResponce(c->getFd(), this->name + "004 "
+            + c->getNick() + " : "
+            + "0.1" + " iktlo klo\r\n");
+        sendResponce(c->getFd(), this->name + "005 "
+            + "PREFIX=(o)@ CHANTYPES=# :are supported by this server\r\n");
+        sendResponce(c->getFd(), this->name + "376 " + c->getNick() + " :End of /MOTD command.\n");
 	}
 }
 
@@ -165,7 +171,7 @@ void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
             if (!ch->isMember(c))
                 throw Myexception(ERR_CANNOTSENDTOCHAN);
             std::string msg = c->getIdent() + " PRIVMSG " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
-            ch->broadcast(msg);
+            ch->broadcast(msg, c);
         }
         else
         {
@@ -411,6 +417,8 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             return ;
         size_t  arg = 3;
         char    operation = 0;
+        std::string seted = "";
+        std::string unseted = "";
         for (size_t i = 0; i < SplitedMsg[2].size(); i++)
         {
             if (SplitedMsg[2][i] == '-' || SplitedMsg[2][i] == '+')
@@ -421,9 +429,15 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             if (operation == '+')
             {
                 if (SplitedMsg[2][i] == 'i')
+                {
                     ch->setMode(MODE_INVONLY);
+                    seted += seted.find('i') == std::string::npos ? "i" : "";
+                }
                 else if (SplitedMsg[2][i] == 't')
+                {
                     ch->setMode(MODE_TOPREST);
+                    seted += seted.find('t') == std::string::npos ? "t" : "";
+                }
                 else
                 {
                     if (SplitedMsg.size() < arg + 1)
@@ -432,11 +446,13 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                     {
                         ch->setKey(SplitedMsg[arg++]);
                         ch->setMode(MODE_CHANKEY);
+                        seted += seted.find('k') == std::string::npos ? "k" : "";
                     }
                     else if (SplitedMsg[2][i] == 'l')
                     {
                         ch->setLimit(std::atoi(SplitedMsg[arg++].c_str()));
                         ch->setMode(MODE_USERLIM);
+                        seted += seted.find('l') == std::string::npos ? "l" : "";
                     }
                     else if (SplitedMsg[2][i] == 'o')
                     {
@@ -446,6 +462,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                         if (!ch->isMember(target))
                             throw Myexception(ERR_USERNOTINCHANNEL);
                         ch->setOperator(target);
+                        seted += seted.find('o') == std::string::npos ? "o" : "";
                     }
                     else
                         throw Myexception(ERR_UNKNOWNCOMMAND);
@@ -454,18 +471,26 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             else if (operation == '-')
             {
                 if (SplitedMsg[2][i] == 'i')
+                {
                     ch->unsetMode(MODE_INVONLY);
+                    unseted += unseted.find('i') == std::string::npos ? "i" : "";
+                }
                 else if (SplitedMsg[2][i] == 't')
+                {
                     ch->unsetMode(MODE_TOPREST);
+                    unseted += unseted.find('t') == std::string::npos ? "t" : "";
+                }
                 else if (SplitedMsg[2][i] == 'k')
                 {
                     ch->setKey("");
                     ch->unsetMode(MODE_CHANKEY);
+                    unseted += unseted.find('k') == std::string::npos ? "k" : "";
                 }
                 else if (SplitedMsg[2][i] == 'l')
                 {
                     ch->setLimit(0);
                     ch->unsetMode(MODE_USERLIM);
+                    unseted += unseted.find('l') == std::string::npos ? "l" : "";
                 }
                 else if (SplitedMsg[2][i] == 'o')
                 {
@@ -477,6 +502,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                     if (!ch->isMember(target))
                         throw Myexception(ERR_USERNOTINCHANNEL);
                     ch->unsetOperator(target);
+                    unseted += unseted.find('o') == std::string::npos ? "o" : "";
                 }
                 else
                     throw Myexception(ERR_UNKNOWNCOMMAND);
@@ -484,7 +510,18 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             else
                 throw Myexception(ERR_UNKNOWNCOMMAND);
         }
-        std::string msg = c->getIdent() + " MODE " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n";
+        std::string msg = c->getIdent() + " MODE " + SplitedMsg[1];
+        msg += unseted.empty() ? "" : " -" + unseted;
+        msg += seted.empty() ? "" : " +" + seted;
+        arg = 3;
+        for (size_t i = 0; i < seted.size(); i++)
+        {
+            if (seted[i] == 'k' || seted[i] == 'l')
+                msg += " " + SplitedMsg[arg++];
+            else if (seted[i] == 'o')
+                msg += " " + SplitedMsg[arg++];
+        }
+        msg += "\r\n";
         ch->broadcast(msg);
     }
 }
