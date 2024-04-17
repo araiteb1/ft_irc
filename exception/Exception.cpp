@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Exception.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:27:37 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/14 16:45:43 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/17 22:10:09 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Exception.hpp"
 
-std::string     Myexception::msgError(int num)
+std::string     Myexception::msgError(int num, std::vector< std::string> &SplitMsg)
 {
+    std::string rsl;
     switch (num){
         case ERR_NEEDMOREPARAMS:
             return (":Not enough parameters");
@@ -28,13 +29,15 @@ std::string     Myexception::msgError(int num)
         case ERR_NICKCOLLISION:
             return (":Nickname collision KILL");
         case ERR_NORECIPIENT:
-            return (":No recipient given (<command>)");
+            rsl = ":No recipient given " + SplitMsg[0];
+            return (rsl);
         case ERR_CANNOTSENDTOCHAN:
             return (":Cannot send to channel");
         case ERR_WILDTOPLEVEL:
             return (":Wildcard in toplevel domain");
         case ERR_NOSUCHNICK:
-            return (":No such nick/channel");
+            rsl =  SplitMsg[1] + " :No such nick/channel";
+            return (rsl);
         case ERR_NOTEXTTOSEND:
             return (":No text to send");
         case ERR_NOTOPLEVEL:

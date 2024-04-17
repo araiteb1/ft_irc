@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/17 11:21:59 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/17 22:17:33 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,12 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 				cmdmode(SplitedMsg, c);
             else if(!SplitedMsg[0].compare("QUIT"))
                 cmdquit(SplitedMsg, c);
+            else
+                throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
             
 		}
 		else
-			throw Myexception(ERR_ALREADYREGISTRED);
+			throw Myexception(ERR_ALREADYREGISTRED,SplitedMsg);
 	}
 		catch(Myexception & e) {
 		sendResponce(c->getFd(), this->name
@@ -77,21 +79,21 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 	if (!c->getNick().empty())
 		flag = 1;
 	if (SplitedMsg.size() > 0 && SplitedMsg.size() > 2)
-		throw Myexception(ERR_NEEDMOREPARAMS);
+		throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
 	if (SplitedMsg.size() > 0 && SplitedMsg.size() == 1)
-		throw Myexception(ERR_NONICKNAMEGIVEN);
+		throw Myexception(ERR_NONICKNAMEGIVEN, SplitedMsg);
 	std::size_t found = SplitedMsg[1].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]`|^{}");
 	if (found != std::string::npos)
-		throw Myexception(ERR_ERRONEUSNICKNAME);
+		throw Myexception(ERR_ERRONEUSNICKNAME, SplitedMsg);
 	if (!SplitedMsg[1].empty())
 	{    
 		tmpClient = this->getClientByNickname(SplitedMsg[1]);
 		if (tmpClient && (tmpClient->getFd() != c->getFd() || !SplitedMsg[1].compare("Bot")))
-			throw Myexception(ERR_NICKNAMEINUSE);
+			throw Myexception(ERR_NICKNAMEINUSE, SplitedMsg);
         std::string msg = c->getIdent() + " NICK " + SplitedMsg[1] + "\r\n";
 		c->seTNick(SplitedMsg[1]);
 		if (this->IsAuthorized(*c) == 2)
-			throw  Myexception(ERR_PASSWDMISMATCH);
+			throw  Myexception(ERR_PASSWDMISMATCH, SplitedMsg);
 		if (this->IsAuthorized(*c) == 1)
 		{
             if (flag)
@@ -128,27 +130,27 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 void	Server::cmdpass(std::vector<std::string>& SplitedMsg, Client *c)
 {
 	if (this->IsAuthorized(*c))
-		throw Myexception(ERR_ALREADYREGISTRED);
+		throw Myexception(ERR_ALREADYREGISTRED, SplitedMsg);
 	if (SplitedMsg.size() != 2)
-		throw Myexception(ERR_NEEDMOREPARAMS);
+		throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
 	c->seTPass(SplitedMsg[1]);
 }
 
 void	Server::cmduser(Client *c, std::vector<std::string> &SplitedMsg)
 {
 	if (this->IsAuthorized(*c) || !c->getusername().empty())
-		throw Myexception(ERR_ALREADYREGISTRED);
+		throw Myexception(ERR_ALREADYREGISTRED, SplitedMsg);
 	if (SplitedMsg.size() != 5)
-		throw Myexception(ERR_NEEDMOREPARAMS);
+		throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
 	std::size_t found = SplitedMsg[1].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]`|^{}");
 	if (found != std::string::npos)
-		throw Myexception(ERR_ERRONEUSNICKNAME);
+		throw Myexception(ERR_ERRONEUSNICKNAME, SplitedMsg);
 	c->setusename(SplitedMsg[1]);
 	// c->sethostname(SplitedMsg[2]);
 	c->setservername(SplitedMsg[3]);
 	c->setrealname(SplitedMsg[4]);
 	if (this->IsAuthorized(*c) == 2)
-		throw  Myexception(ERR_PASSWDMISMATCH);
+		throw  Myexception(ERR_PASSWDMISMATCH, SplitedMsg);
 	if (this->IsAuthorized(*c) == 1) 
 	{
 		sendResponce(c->getFd(), this->name + "001 "
@@ -183,17 +185,17 @@ std::vector<std::string> split(std::string str, char delim)
 void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
 {
 	if (SplitedMsg.size() < 3)
-		throw Myexception(ERR_NEEDMOREPARAMS);
+		throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
 	std::vector<std::string> targets = split(SplitedMsg[1], ',');
     for (size_t i = 0; i < targets.size(); i++)
     {
         if (targets[i][0] == '#')
         {
             if (channels.find(targets[i]) == channels.end())
-                throw Myexception(ERR_NOSUCHCHANNEL);
+                throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
             Channel *ch = channels[targets[i]];
             if (!ch->isMember(c))
-                throw Myexception(ERR_CANNOTSENDTOCHAN);
+                throw Myexception(ERR_CANNOTSENDTOCHAN, SplitedMsg);
             std::string msg = c->getIdent() + " PRIVMSG " + targets[i] + " :" + SplitedMsg[2] + "\r\n";
             ch->broadcast(msg, c);
         }
@@ -201,7 +203,7 @@ void	Server::cmdprivmsg(std::vector<std::string>& SplitedMsg, Client *c)
         {
             Client *target = getClientByNickname(targets[i]);
             if (!target)
-                throw Myexception(ERR_NOSUCHNICK);
+                throw Myexception(ERR_NOSUCHNICK, SplitedMsg);
             std::string msg = c->getIdent() + " PRIVMSG " + target->getNick() + " :" + SplitedMsg[2] + "\r\n";
             target->sendMsg(msg);
         }
@@ -239,7 +241,7 @@ void    Server::cmdnotice(std::vector<std::string>& SplitedMsg, Client *c)
 void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
 {
 	if (SplitedMsg.size() < 2)
-		throw Myexception(ERR_NEEDMOREPARAMS);
+		throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
 	std::vector<std::string> names = split(SplitedMsg[1], ',');
 	std::vector<std::string> keys = std::vector<std::string>(names.size(), "");
     if (SplitedMsg.size() > 2)
@@ -254,11 +256,11 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
     {
         Channel *ch;
         if (names[i][0] != '#')
-            throw Myexception(ERR_NOSUCHCHANNEL);
+            throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
         if (channels.find(names[i]) == channels.end())
         {
             if (names[i].find_first_of(",\a ") != std::string::npos)
-                throw Myexception(ERR_BADCHANMASK);
+                throw Myexception(ERR_BADCHANMASK, SplitedMsg);
             ch = new Channel(names[i], keys[i], c);
             if (!keys[i].empty())
                 ch->setMode(MODE_CHANKEY);
@@ -269,12 +271,12 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
         {
             ch = channels[names[i]];
             if (ch->getMode() & MODE_CHANKEY && ch->getKey() != keys[i])
-                throw Myexception(ERR_BADCHANNELKEY);
+                throw Myexception(ERR_BADCHANNELKEY, SplitedMsg);
             if (ch->getMode() & MODE_USERLIM && ch->getLimit() <= ch->getMembers().size())
-                throw Myexception(ERR_CHANNELISFULL);
+                throw Myexception(ERR_CHANNELISFULL, SplitedMsg);
             bool invited = ch->isInvited(c->getNick());
             if (ch->getMode() & MODE_INVONLY && !invited)
-                throw Myexception(ERR_INVITEONLYCHAN);
+                throw Myexception(ERR_INVITEONLYCHAN, SplitedMsg);
             ch->addMember(c);
             if (invited)
                 ch->removeInvited(c->getNick());
@@ -306,7 +308,7 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
         for (size_t i = 0; i < names.size(); i++)
         {
             if (channels.find(names[i]) == channels.end())
-                throw Myexception(ERR_NOSUCHCHANNEL);
+                throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
             Channel *ch = channels[names[i]];
             c->sendMsg(name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
         }
@@ -317,7 +319,7 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
 void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 3)
-        throw Myexception(ERR_NEEDMOREPARAMS);
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
     std::vector<std::string> names = split(SplitedMsg[1], ',');
     std::vector<std::string> targets = split(SplitedMsg[2], ',');
     if (names.size() == 1 && targets.size() > 1)
@@ -325,23 +327,23 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
     else if (names.size() > 1 && targets.size() == 1)
         targets = std::vector<std::string>(names.size(), targets[0]);
     else if (names.size() != targets.size())
-        throw Myexception(ERR_NEEDMOREPARAMS);
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
     for (size_t i = 0; i < names.size(); i++)
     {
         if (names[i][0] != '#')
-            throw Myexception(ERR_NOSUCHCHANNEL);
+            throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
         if (channels.find(names[i]) == channels.end())
-            throw Myexception(ERR_NOSUCHCHANNEL);
+            throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
         Channel *ch = channels[names[i]];
         if (!ch->isMember(c))
-            throw Myexception(ERR_NOTONCHANNEL);
+            throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
         if (!ch->isOperator(c))
-            throw Myexception(ERR_CHANOPRIVSNEEDED);
+            throw Myexception(ERR_CHANOPRIVSNEEDED, SplitedMsg);
         Client *target = getClientByNickname(targets[i]);
         if (!target)
-            throw Myexception(ERR_NOSUCHNICK);
+            throw Myexception(ERR_NOSUCHNICK, SplitedMsg);
         if (!ch->isMember(target))
-            throw Myexception(ERR_USERNOTINCHANNEL);
+            throw Myexception(ERR_USERNOTINCHANNEL, SplitedMsg);
         std::string msg = c->getIdent() + " KICK " + names[i] + ' ' + target->getNick() + " :";
         msg += SplitedMsg.size() > 3 ? SplitedMsg[3] : "for some reason";
         msg += "\r\n";
@@ -353,15 +355,15 @@ void	Server::cmdkick(std::vector<std::string>& SplitedMsg, Client *c)
 void    Server::cmdpart(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 2)
-        throw Myexception(ERR_NEEDMOREPARAMS);
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
     std::vector<std::string> names = split(SplitedMsg[1], ',');
     for (size_t i = 0; i < names.size(); i++)
     {
         if (channels.find(names[i]) == channels.end())
-            throw Myexception(ERR_NOSUCHCHANNEL);
+            throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
         Channel *ch = channels[names[i]];
         if (!ch->isMember(c))
-            throw Myexception(ERR_NOTONCHANNEL);
+            throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
         std::string msg = c->getIdent() + " PART " + names[i];
         msg += SplitedMsg.size() > 2 ? " :" + SplitedMsg[2] : "";
         msg += "\r\n";
@@ -378,19 +380,19 @@ void    Server::cmdpart(std::vector<std::string>& SplitedMsg, Client *c)
 void	Server::cmdinvite(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 3)
-        throw Myexception(ERR_NEEDMOREPARAMS);
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
     Client *target = getClientByNickname(SplitedMsg[1]);
     if (target == NULL)
-        throw Myexception(ERR_NOSUCHNICK);
+        throw Myexception(ERR_NOSUCHNICK, SplitedMsg);
     if (channels.find(SplitedMsg[2]) == channels.end())
-        throw Myexception(ERR_NOSUCHCHANNEL);
+        throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
     Channel *ch = channels[SplitedMsg[2]];
     if (!ch->isMember(c))
-        throw Myexception(ERR_NOTONCHANNEL);
+        throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
     if (ch->getMode() & MODE_INVONLY && !ch->isOperator(c))
-        throw Myexception(ERR_CHANOPRIVSNEEDED);
+        throw Myexception(ERR_CHANOPRIVSNEEDED, SplitedMsg);
     if (ch->isMember(target))
-        throw Myexception(ERR_USERONCHANNEL);
+        throw Myexception(ERR_USERONCHANNEL, SplitedMsg);
     ch->addInvited(target->getNick());
     std::string msg = c->getIdent() + " INVITE " + target->getNick() + ' ' + SplitedMsg[2] + "\r\n";
     target->sendMsg(msg);
@@ -399,12 +401,12 @@ void	Server::cmdinvite(std::vector<std::string>& SplitedMsg, Client *c)
 void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 2)
-        throw Myexception(ERR_NEEDMOREPARAMS);
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
     if (channels.find(SplitedMsg[1]) == channels.end())
-        throw Myexception(ERR_NOSUCHCHANNEL);
+        throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
     Channel *ch = channels[SplitedMsg[1]];
     if (!ch->isMember(c))
-        throw Myexception(ERR_NOTONCHANNEL);
+        throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
     if (SplitedMsg.size() == 2)
     {
         std::string msg = name;
@@ -417,7 +419,7 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
     else
     {
         if (ch->getMode() & MODE_TOPREST && !ch->isOperator(c))
-            throw Myexception(ERR_CHANOPRIVSNEEDED);
+            throw Myexception(ERR_CHANOPRIVSNEEDED, SplitedMsg);
         ch->setTopic(SplitedMsg[2]);
         std::string msg = c->getIdent() + " TOPIC " + SplitedMsg[1] + " :" + SplitedMsg[2] + "\r\n";
         ch->broadcast(msg);
@@ -427,18 +429,18 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
 void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 2)
-        throw Myexception(ERR_NEEDMOREPARAMS);
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
     if (channels.find(SplitedMsg[1]) == channels.end())
-        throw Myexception(ERR_NOSUCHCHANNEL);
+        throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
     Channel *ch = channels[SplitedMsg[1]];
     if (!ch->isMember(c))
-        throw Myexception(ERR_NOTONCHANNEL);
+        throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
     if (SplitedMsg.size() == 2)
         c->sendMsg(name + "324 " + c->getNick() + " " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n");
     else
     {
         if (!ch->isOperator(c))
-            throw Myexception(ERR_CHANOPRIVSNEEDED);
+            throw Myexception(ERR_CHANOPRIVSNEEDED, SplitedMsg);
         if (SplitedMsg[2] == "+sn")
             return ;
         size_t  arg = 3;
@@ -447,6 +449,8 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
         std::string unseted = "";
         for (size_t i = 0; i < SplitedMsg[2].size(); i++)
         {
+            // try(){
+                
             if (SplitedMsg[2][i] == '-' || SplitedMsg[2][i] == '+')
             {
                 operation = SplitedMsg[2][i];
@@ -467,7 +471,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                 else
                 {
                     if (SplitedMsg.size() < arg + 1)
-                        throw Myexception(ERR_NEEDMOREPARAMS);
+                        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
                     if (SplitedMsg[2][i] == 'k')
                     {
                         ch->setKey(SplitedMsg[arg++]);
@@ -484,15 +488,16 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                     {
                         Client *target = getClientByNickname(SplitedMsg[arg++]);
                         if (!target)
-                            throw Myexception(ERR_NOSUCHNICK);
+                            throw Myexception(ERR_NOSUCHNICK, SplitedMsg);
                         if (!ch->isMember(target))
-                            throw Myexception(ERR_USERNOTINCHANNEL);
+                            throw Myexception(ERR_USERNOTINCHANNEL, SplitedMsg);
                         ch->setOperator(target);
                         seted += seted.find('o') == std::string::npos ? "o" : "";
                     }
                     else
-                        throw Myexception(ERR_UNKNOWNCOMMAND);
+                        throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
                 }
+                
             }
             else if (operation == '-')
             {
@@ -521,20 +526,21 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                 else if (SplitedMsg[2][i] == 'o')
                 {
                     if (SplitedMsg.size() < arg + 1)
-                        throw Myexception(ERR_NEEDMOREPARAMS);
+                        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
                     Client *target = getClientByNickname(SplitedMsg[arg++]);
                     if (!target)
-                        throw Myexception(ERR_NOSUCHNICK);
+                        throw Myexception(ERR_NOSUCHNICK, SplitedMsg);
                     if (!ch->isMember(target))
-                        throw Myexception(ERR_USERNOTINCHANNEL);
+                        throw Myexception(ERR_USERNOTINCHANNEL, SplitedMsg);
                     ch->unsetOperator(target);
                     unseted += unseted.find('o') == std::string::npos ? "o" : "";
                 }
                 else
-                    throw Myexception(ERR_UNKNOWNCOMMAND);
+                    throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
             }
             else
-                throw Myexception(ERR_UNKNOWNCOMMAND);
+                throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
+            // }catch() { . . . }
         }
         std::string msg = c->getIdent() + " MODE " + SplitedMsg[1];
         msg += unseted.empty() ? "" : " -" + unseted;

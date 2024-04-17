@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Exception.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:27:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/14 16:45:30 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/17 21:59:17 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include<iostream>
 #include<string>
+#include<vector>
 
 enum e_rronum{
     ERR_NOTREGISTERED = 451,
@@ -57,14 +58,14 @@ class Myexception : public std::exception{
             std::string err_msg;
         public:
             Myexception(std::string msg) : err_msg(msg) {}
-            Myexception(int err_number) {
+            Myexception(int err_number, std::vector< std::string>& SplitMsg) {
                 err_num = err_number;
-                err_msg = msgError(err_num);
+                err_msg = msgError(err_num, SplitMsg);
             }
             virtual ~Myexception() throw() {}
             
 
-            std::string msgError(int num);
+            std::string msgError(int num , std::vector< std::string> &SplitMsg);
             char const *    what() const throw() {
                 return (err_msg.c_str());
             }
