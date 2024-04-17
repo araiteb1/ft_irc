@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 18:55:20 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/17 11:21:59 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,9 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 
 	if (!c->getNick().empty())
 		flag = 1;
-	if (SplitedMsg.size() > 0 && (SplitedMsg.size() != 2 ||  SplitedMsg[1].empty()))
+	if (SplitedMsg.size() > 0 && SplitedMsg.size() > 2)
+		throw Myexception(ERR_NEEDMOREPARAMS);
+	if (SplitedMsg.size() > 0 && SplitedMsg.size() == 1)
 		throw Myexception(ERR_NONICKNAMEGIVEN);
 	std::size_t found = SplitedMsg[1].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]`|^{}");
 	if (found != std::string::npos)

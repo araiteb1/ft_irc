@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 14:08:00 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 14:53:10 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/17 11:45:19 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,18 @@ void 	Bot::traitResvedData(std::string &msg, int client_fd) {
         sendResponce(client_fd , "privmsg " +sender+ ": -Command: KICK  / Parameters: <channel> <user> [<comment>] \n");
         usleep(1);
         sendResponce(client_fd , "privmsg " +sender+ ": -Command: PRIVMSG / Parameters: <receiver>{,<receiver>} <text to be sent> \n");
+        usleep(1);
+        sendResponce(client_fd , "privmsg " +sender+ ": -Command: PART / Parameters: <channel>{,<channel>} \n");
+        usleep(1);
+        sendResponce(client_fd , "privmsg " +sender+ ": -Command: LIST / Parameters: [<channel>{,<channel>} [<server>]] \n");
+        usleep(1);
+        sendResponce(client_fd , "privmsg " +sender+ ": -Command: NOTICE / Parameters: <nickname> <text> \n");
+        usleep(1);
+        sendResponce(client_fd , "privmsg " +sender+ ": -Command: MODE / Parameters: <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>] \n");
+        usleep(1);
+        sendResponce(client_fd , "privmsg " +sender+ ": : -Command: MODE / <nickname> {[+|-]|i|w|s|o} \n");
+        usleep(1);
+        sendResponce(client_fd , "privmsg " +sender+ ": -Command: QUIT / Parameters: [<Quit message>] \n");
         usleep(1);
     }
     tmp1.clear();
