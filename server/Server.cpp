@@ -6,14 +6,17 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/19 00:33:41 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/19 00:36:23 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
+Server	*Server::serverPtr = NULL;
+
 Server::Server(std::string ipAdd, int port): m_pass(ipAdd),m_port(port)
 {
+	Server::serverPtr = this;
 	this->name = ":42_IRC ";
 	this->num = 1;
 	this->user_num = 1;
@@ -371,4 +374,12 @@ Client*	Server::getClientByNickname(std::string nickname)
 			return (it->second);
 	}
 	return NULL;
+}
+
+
+void			Server::signal_handler(int signal)
+{
+	(void)signal;
+	if (serverPtr)
+		serverPtr->~Server();
 }

@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/18 18:17:13 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/18 21:23:36 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@
 #include <string.h>
 #include <cstring>
 #include <fcntl.h>
-#include <cstddef> 
+#include <cstddef>
+#include <csignal>
 #include <sstream>
 #include <algorithm>
 #include <map>
@@ -74,6 +75,8 @@ class Server {
 		channelMap					channels;
 
     public:
+		static Server	*serverPtr;
+	
         Server(const std::string ipAdd, int port);
 		Server(Server &sr);
 		Server& operator=(const Server &sr);
@@ -130,6 +133,8 @@ class Server {
 
 		void			commands(Message &msg, std::vector <std::string> &SplitedMsg);
 		std::string 	to_string(int number);
+
+		static void		signal_handler(int signal);
 
 };
 
