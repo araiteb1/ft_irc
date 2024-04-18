@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:28:26 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 20:06:55 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/18 23:02:49 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Client::Client(int fd)
 	this->hostname = "";
 	this->servername = "";
 	this->realname = "";
+	this->remain = "";
 }
 Client::Client(Client &cl)
 {
@@ -59,6 +60,10 @@ void    Client::seTPass(std::string pwd)
 {
 	pass = pwd;
 }
+void    Client::setremain(std::string rem)
+{
+	this->remain = rem;
+}
 void    Client::setFdUser(int FdUser)
 {
 	fd = FdUser;
@@ -84,6 +89,9 @@ std::string &		Client::getservername(){
 }
 std::string &		Client::getrealname(){
 	return this->realname;
+}
+std::string &		Client::getremain(){
+	return this->remain;
 }
 
 int             Client::getFd() {

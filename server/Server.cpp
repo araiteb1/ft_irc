@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 17:59:16 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/19 00:33:41 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ Server::~Server(){
 		delete it2->second;
 		it2++;
 	}
-	channels.clear();	
-	close(server_fd);
+	channels.clear();
+	close (this->server_fd);
 }
 
 
@@ -198,7 +198,6 @@ void	Server::clientLeft(int fd) {
 		if (client != this->clients.end()) {
 			if (!client->second->geTPass().empty())
 				close (fd);
-			cmdquit(client->second, "Connection closed");
 			delete client->second;
 			this->clients.erase(client);
 		}
@@ -206,7 +205,7 @@ void	Server::clientLeft(int fd) {
 }
 
 void Server::quitServer() {
-    close (this->server_fd);
+    
 	this->on = 1;
     this->~Server();
     exit (EXIT_FAILURE);
@@ -264,22 +263,27 @@ int 	Server::checkmsg(int fd){
 		}
 		if (rec == 0)
 		{
-			std::cout << " Connection  closed " << std::endl;
+			std::map<int, Client *>::iterator c = clients.find(fd);
+			if (c != this->clients.end())
+				cmdquit(c->second, "Connection closed");
+			// std::cout << " Connection  closed " << std::endl;
 			this->clientLeft(fd);
 			return 0;
 		}
 		buffer[rec] = '\0';
 		msg += buffer;
+		Client *user = getClientByFd(fd);
 		if (msg.find_first_of("\r\n") != std::string::npos && msg != "\n")
 		{
 			size_t pos = msg.find_last_of("\r\n");
-			msg = msg.substr(0, pos);
+			msg = user->getremain() + msg.substr(0, pos);
+			user->setremain("");
 			Message mesg = Message(fd, msg);
 			TraiteMessage(mesg);
 			return 1;
 		}
 		else{
-			
+			user->setremain(msg);
 			return 1 ;
 		}
 	}while(1); // end of accept function
@@ -305,9 +309,10 @@ void	Server::PollingFd()
 			std::cout << "End program : time out" << std::endl;
 			this->quitServer();
 		}
-		num = user_num;
 		for (int i = 0; i < this->user_num; i++)
 		{
+			// if (this->user_num > LIMITCNX)
+			// 	wait();
 			if (users[i].revents == 0)
 				continue;
 			if (this->users[i].fd == this->server_fd)

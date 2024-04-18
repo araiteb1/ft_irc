@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 10:01:11 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/18 18:17:13 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ class Client;
 class Message;
 class Channel;
 
+typedef std::map<std::string, Channel *> channelMap;
+
 class Server {
 	
 	private:
@@ -69,7 +71,7 @@ class Server {
 		std::string					msgsendResponce;
 		std::string					checkPiv;
 		std::map <int, Client *>	clients;
-		std::map <std::string, Channel *>	channels;
+		channelMap					channels;
 
     public:
         Server(const std::string ipAdd, int port);
@@ -111,6 +113,9 @@ class Server {
 		void			cmdpart(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdinvite(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdtopic(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdping(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdpong(std::vector<std::string>& SplitedMsg, Client *c);
+		void			cmdwho(std::vector<std::string>& SplitedMsg, Client *c);
 
 		void			cmdquit(std::vector<std::string>& SplitedMsg, Client *c);
 		void			cmdquit(Client *c, std::string reason);

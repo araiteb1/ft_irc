@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:28:14 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/15 11:54:44 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/18 23:03:05 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Client
 		std::string		hostname;
 		std::string		servername;
 		std::string		realname;
+		std::string		remain;
 		int fd;
 	public:
 		Client();
@@ -43,6 +44,7 @@ class Client
 		void			sethostname(std::string);
 		void			setservername(std::string);
 		void			setrealname(std::string);
+		void    		setremain(std::string rem);
 		
 		 
 		int				getFd();
@@ -52,6 +54,7 @@ class Client
 		std::string		&gethostname();
 		std::string		&getservername();
 		std::string		&getrealname();
+		std::string 	&getremain();
 		
 		std::string 	getIdent();
 
