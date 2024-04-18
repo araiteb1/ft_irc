@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/18 14:58:07 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/18 18:03:26 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	Server::cmdknick(std::vector<std::string> &SplitedMsg, Client *c)
 		{
             if (flag)
             {
-                for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+                for (channelMap::iterator it = channels.begin(); it != channels.end(); it++)
                 {
                     Channel *ch = it->second;
                     if (ch->isMember(c))
@@ -247,10 +247,7 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
     if (SplitedMsg.size() > 2)
     {
         std::vector<std::string> tmp = split(SplitedMsg[2], ',');
-        if (tmp.size() > keys.size())
-            keys = tmp;
-        else
-            keys.insert(keys.begin(), tmp.begin(), tmp.end());
+        std::copy(tmp.begin(), tmp.begin() + std::min(tmp.size(), keys.size()), keys.begin());
     }
     for (size_t i = 0; i < names.size(); i++)
     {
@@ -306,7 +303,7 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() == 1)
     {
-        for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); it++)
+        for (channelMap::iterator it = channels.begin(); it != channels.end(); it++)
         {
             Channel *ch = it->second;
             c->sendMsg(name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
@@ -615,7 +612,7 @@ void	Server::cmdquit(std::vector<std::string>& SplitedMsg, Client *c)
     std::string msg = c->getIdent() + " QUIT : ";
     msg += SplitedMsg.size() > 1 ? SplitedMsg[1] : "Client Quit";
     msg += "\r\n";
-    std::map<std::string, Channel *>::iterator it = channels.begin();
+    channelMap::iterator it = channels.begin();
     while (it != channels.end())
     {
         Channel *ch = it->second;
@@ -626,9 +623,8 @@ void	Server::cmdquit(std::vector<std::string>& SplitedMsg, Client *c)
         }
         if (ch->getMembers().empty())
         {
-            std::string tmp = ch->getName();
-            delete ch;
-            it = channels.erase(it);
+            delete ch;   
+            channels.erase(it++);
         }
         else
             it++;
@@ -638,9 +634,8 @@ void	Server::cmdquit(std::vector<std::string>& SplitedMsg, Client *c)
 
 void	Server::cmdquit(Client *c, std::string reason)
 {
-
     std::string msg = c->getIdent() + " QUIT : " + reason + "\r\n";
-     std::map<std::string, Channel *>::iterator it = channels.begin();
+    channelMap::iterator it = channels.begin();
     while (it != channels.end())
     {
         Channel *ch = it->second;
@@ -651,9 +646,8 @@ void	Server::cmdquit(Client *c, std::string reason)
         }
         if (ch->getMembers().empty())
         {
-            std::string tmp = ch->getName();
-            delete ch;
-            it = channels.erase(it);
+            delete ch;   
+            channels.erase(it++);
         }
         else
             it++;
