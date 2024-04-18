@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
+/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/16 17:59:16 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/18 14:47:28 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,7 @@ Server::~Server(){
 		delete it2->second;
 		it2++;
 	}
-	channels.clear();	
-	close(server_fd);
+	channels.clear();
 }
 
 
@@ -198,7 +197,6 @@ void	Server::clientLeft(int fd) {
 		if (client != this->clients.end()) {
 			if (!client->second->geTPass().empty())
 				close (fd);
-			cmdquit(client->second, "Connection closed");
 			delete client->second;
 			this->clients.erase(client);
 		}
@@ -264,7 +262,10 @@ int 	Server::checkmsg(int fd){
 		}
 		if (rec == 0)
 		{
-			std::cout << " Connection  closed " << std::endl;
+			std::map<int, Client *>::iterator c = clients.find(fd);
+			if (c != this->clients.end())
+				cmdquit(c->second, "Connection closed");
+			// std::cout << " Connection  closed " << std::endl;
 			this->clientLeft(fd);
 			return 0;
 		}
