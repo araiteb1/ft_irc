@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/18 18:03:26 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/18 18:22:24 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,12 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 				cmdmode(SplitedMsg, c);
             else if(!SplitedMsg[0].compare("QUIT"))
                 cmdquit(SplitedMsg, c);
+            else if(!SplitedMsg[0].compare("PING"))
+                cmdping(SplitedMsg, c);
+            else if(!SplitedMsg[0].compare("PONG"))
+                cmdpong(SplitedMsg, c);
+            else if(!SplitedMsg[0].compare("WHO"))
+                cmdwho(SplitedMsg, c);
             else
                 throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
             
@@ -653,4 +659,33 @@ void	Server::cmdquit(Client *c, std::string reason)
             it++;
     }
     this->clientLeft(c->getFd());
+}
+
+void    Server::cmdping(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
+    std::string msg = c->getIdent() + " PONG " + SplitedMsg[1] + "\r\n";
+    c->sendMsg(msg);
+}
+
+void    Server::cmdpong(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
+    std::string msg = c->getIdent() + " PING " + SplitedMsg[1] + "\r\n";
+    c->sendMsg(msg);
+}
+
+void    Server::cmdwho(std::vector<std::string>& SplitedMsg, Client *c)
+{
+    if (SplitedMsg.size() < 2)
+        throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
+    if (channels.find(SplitedMsg[1]) == channels.end())
+        throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
+    Channel *ch = channels[SplitedMsg[1]];
+    if (!ch->isMember(c))
+        throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
+    c->sendMsg(name + "352 " + c->getNick() + " " + SplitedMsg[1] + " " + ch->getMemberList() + "\r\n");
+    c->sendMsg(name + "315 " + c->getNick() + " " + SplitedMsg[1] + " :End of /WHO list\r\n");
 }
