@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/18 18:22:24 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/19 14:26:13 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -473,6 +473,15 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
     }
 }
 
+size_t  strtosize_t(std::string &str)
+{
+    std::stringstream ss(str);
+    int n;
+    if (!(ss >> n) || n < 0)
+        return (0);
+    return (static_cast<size_t>(n));
+}
+
 void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
 {
     if (SplitedMsg.size() < 2)
@@ -527,7 +536,10 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                         }
                         else if (SplitedMsg[2][i] == 'l')
                         {
-                            ch->setLimit(std::atoi(SplitedMsg[arg++].c_str()));
+                            size_t l = strtosize_t(SplitedMsg[arg++]);
+                            if (!l)
+                                continue ;
+                            ch->setLimit(l);
                             ch->setMode(MODE_USERLIM);
                             seted += seted.find('l') == std::string::npos ? "l" : "";
                         }
@@ -597,7 +609,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                 + e.what() + "\n");
             }
         }
-        std::string msg = c->getIdent() + " MODE " + SplitedMsg[1];
+        std::string msg;
         msg += unseted.empty() ? "" : " -" + unseted;
         msg += seted.empty() ? "" : " +" + seted;
         arg = 3;
@@ -608,8 +620,8 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             else if (seted[i] == 'o')
                 msg += " " + SplitedMsg[arg++];
         }
-        msg += "\r\n";
-        ch->broadcast(msg);
+        if (!msg.empty())
+            ch->broadcast(c->getIdent() + " MODE " + SplitedMsg[1] + msg + "\r\n");
     }
 }
 
