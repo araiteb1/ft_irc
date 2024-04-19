@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+         #
+#    By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/19 12:15:46 by araiteb           #+#    #+#              #
-#    Updated: 2024/04/18 20:45:07 by araiteb          ###   ########.fr        #
+#    Updated: 2024/04/19 14:52:48 by anammal          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ SRCS = main.cpp ./clients/Client.cpp ./server/Server.cpp ./tools/ft_split.cpp  .
 SRCSB = ./bonus/main_bonus.cpp ./bonus/Bot.cpp ./bonus/Bot_commands.cpp ./tools/ft_split.cpp  ./message/Message.cpp
 
 CC = c++ 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address
 OBJS = $(SRCS:.cpp=.o)
 OBJSB = $(SRCSB:.cpp=.o)
 

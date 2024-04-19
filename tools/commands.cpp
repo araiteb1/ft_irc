@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/19 14:26:13 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/19 16:42:18 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,7 +269,6 @@ void	Server::cmdjoin(std::vector<std::string>& SplitedMsg, Client *c)
                 ch = new Channel(names[i], keys[i], c);
                 if (!keys[i].empty())
                     ch->setMode(MODE_CHANKEY);
-                ch->setMode(MODE_TOPREST);
                 channels[names[i]] = ch;
             }
             else
@@ -312,7 +311,9 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
         for (channelMap::iterator it = channels.begin(); it != channels.end(); it++)
         {
             Channel *ch = it->second;
-            c->sendMsg(name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
+            std::string msg = name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :";
+            msg += ch->getTopic().empty() ? "No topic is set" : ch->getTopic();
+            c->sendMsg(msg + "\r\n");
         }
         c->sendMsg(name + "323 " + c->getNick() + " :End of /LIST\r\n");
     }
@@ -326,7 +327,9 @@ void    Server::cmdlist(std::vector<std::string>& SplitedMsg, Client *c)
                 if (channels.find(names[i]) == channels.end())
                     throw Myexception(ERR_NOSUCHCHANNEL, SplitedMsg);
                 Channel *ch = channels[names[i]];
-                c->sendMsg(name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :" + ch->getTopic() + "\r\n");
+                std::string msg = name + "322 " + c->getNick() + " " + ch->getName() + " " + int2string(ch->getMembers().size()) + " :";
+                msg += ch->getTopic().empty() ? "No topic is set" : ch->getTopic();
+                c->sendMsg(msg + "\r\n");
             }
             catch(Myexception &e)
             {
@@ -468,8 +471,9 @@ void    Server::cmdtopic(std::vector<std::string>& SplitedMsg, Client *c)
         if (ch->getMode() & MODE_TOPREST && !ch->isOperator(c))
             throw Myexception(ERR_CHANOPRIVSNEEDED, SplitedMsg);
         ch->setTopic(SplitedMsg[2]);
-        std::string msg = c->getIdent() + " TOPIC " + SplitedMsg[1] + " :" + SplitedMsg[2] + "\r\n";
-        ch->broadcast(msg);
+        std::string msg = c->getIdent() + " TOPIC " + SplitedMsg[1] + " :";
+        msg += SplitedMsg[2].empty() ? "No topic is set" : SplitedMsg[2];
+        ch->broadcast(msg + "\r\n");
     }
 }
 
@@ -492,7 +496,10 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
     if (!ch->isMember(c))
         throw Myexception(ERR_NOTONCHANNEL, SplitedMsg);
     if (SplitedMsg.size() == 2)
+    {
         c->sendMsg(name + "324 " + c->getNick() + " " + SplitedMsg[1] + " +" + ch->getModeStr() + "\r\n");
+        
+    }
     else
     {
         if (!ch->isOperator(c))
@@ -526,6 +533,8 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                     }
                     else
                     {
+                        if (SplitedMsg[2][i] != 'k' && SplitedMsg[2][i] != 'l' && SplitedMsg[2][i] != 'o')
+                            throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
                         if (SplitedMsg.size() < arg + 1)
                             throw Myexception(ERR_NEEDMOREPARAMS, SplitedMsg);
                         if (SplitedMsg[2][i] == 'k')
@@ -556,7 +565,6 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                         else
                             throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
                     }
-                    
                 }
                 else if (operation == '-')
                 {
