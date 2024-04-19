@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/19 00:36:23 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/19 14:24:41 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,9 +236,6 @@ int 		Server::acceptingData(){
 		users[user_num].fd = newfd;
 		users[user_num]. events = POLLIN;
 		user_num++;
-
-        // sendResponce(newfd, this->name + "NOTICE AUTH :*** Looking up your hostname . . .\n");
-	    // sendResponce(newfd, this->name + "NOTICE AUTH :*** Found your hostname\n");
 	} while (newfd != -1);
 	return 1;
 }
@@ -269,14 +266,13 @@ int 	Server::checkmsg(int fd){
 			std::map<int, Client *>::iterator c = clients.find(fd);
 			if (c != this->clients.end())
 				cmdquit(c->second, "Connection closed");
-			// std::cout << " Connection  closed " << std::endl;
 			this->clientLeft(fd);
 			return 0;
 		}
 		buffer[rec] = '\0';
 		msg += buffer;
 		Client *user = getClientByFd(fd);
-		if (msg.find_first_of("\r\n") != std::string::npos && msg != "\n")
+		while(msg.find_first_of("\r\n") != std::string::npos && msg != "\n")
 		{
 			size_t pos = msg.find_last_of("\r\n");
 			msg = user->getremain() + msg.substr(0, pos);
@@ -285,10 +281,8 @@ int 	Server::checkmsg(int fd){
 			TraiteMessage(mesg);
 			return 1;
 		}
-		else{
-			user->setremain(msg);
-			return 1 ;
-		}
+		user->setremain(msg);
+		return 1 ;
 	}while(1); // end of accept function
 	return 1;
 }
@@ -314,8 +308,6 @@ void	Server::PollingFd()
 		}
 		for (int i = 0; i < this->user_num; i++)
 		{
-			// if (this->user_num > LIMITCNX)
-			// 	wait();
 			if (users[i].revents == 0)
 				continue;
 			if (this->users[i].fd == this->server_fd)
