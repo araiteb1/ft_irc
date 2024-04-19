@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/19 18:03:27 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/19 18:24:54 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ void	Server::commands(Message &msg, std::vector <std::string> &SplitedMsg)
 	{
 		if (!SplitedMsg[0].compare("PASS"))
 			cmdpass(SplitedMsg, c);
-		else if (!SplitedMsg[0].compare("NICK"))
+		else if (!SplitedMsg[0].compare("NICK") && !c->geTPass().empty())
 			cmdknick(SplitedMsg, c);
-		else if (!SplitedMsg[0].compare("USER"))
+		else if (!SplitedMsg[0].compare("USER") && !c->geTPass().empty())
 			cmduser(c, SplitedMsg);
 		else if (this->IsAuthorized(*c))
 		{
