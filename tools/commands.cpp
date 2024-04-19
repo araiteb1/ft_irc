@@ -6,7 +6,7 @@
 /*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 12:04:13 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/19 16:42:18 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/19 18:03:27 by anammal          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -510,6 +510,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
         char    operation = 0;
         std::string seted = "";
         std::string unseted = "";
+        std::string unsetedOp = "";
         for (size_t i = 0; i < SplitedMsg[2].size(); i++)
         {
             try
@@ -601,6 +602,7 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
                             throw Myexception(ERR_USERNOTINCHANNEL, SplitedMsg);
                         ch->unsetOperator(target);
                         unseted += unseted.find('o') == std::string::npos ? "o" : "";
+                        unsetedOp = ' ' + target->getNick();
                     }
                     else
                         throw Myexception(ERR_UNKNOWNCOMMAND, SplitedMsg);
@@ -618,7 +620,6 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             }
         }
         std::string msg;
-        msg += unseted.empty() ? "" : " -" + unseted;
         msg += seted.empty() ? "" : " +" + seted;
         arg = 3;
         for (size_t i = 0; i < seted.size(); i++)
@@ -628,6 +629,8 @@ void    Server::cmdmode(std::vector<std::string>& SplitedMsg, Client *c)
             else if (seted[i] == 'o')
                 msg += " " + SplitedMsg[arg++];
         }
+        msg += unseted.empty() ? "" : " -" + unseted;
+        msg += unsetedOp;
         if (!msg.empty())
             ch->broadcast(c->getIdent() + " MODE " + SplitedMsg[1] + msg + "\r\n");
     }

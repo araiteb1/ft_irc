@@ -1,8 +1,8 @@
 {
     "files.associations": {
-        "*.h": "c",
         "*.hpp": "cpp",
         "*.tpp": "cpp",
+        "*.h": "c",
         "iosfwd": "cpp",
         "string": "cpp",
         "vector": "cpp",
@@ -76,6 +76,7 @@
         "memory_resource": "cpp",
         "numeric": "cpp",
         "random": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "filesystem": "cpp"
     }
 }
