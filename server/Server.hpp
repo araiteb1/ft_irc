@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anammal <anammal@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:41 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/18 21:23:36 by anammal          ###   ########.fr       */
+/*   Updated: 2024/04/19 14:28:52 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,9 @@ class Server {
 		int							server_fd;
 		int							on;
 		int							user_num;
-		int							num;
-		int							end_con;
 		sockaddr_in					address;
 		struct pollfd				users[LIMITCNX];
-		int							len;
 		long int					timeout;
-		int							end_ser;
-		int							compress_array;
-		std::string					msgsendResponce;
-		std::string					checkPiv;
 		std::map <int, Client *>	clients;
 		channelMap					channels;
 

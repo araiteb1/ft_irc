@@ -6,7 +6,7 @@
 /*   By: araiteb <araiteb@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 10:23:38 by araiteb           #+#    #+#             */
-/*   Updated: 2024/04/19 14:24:41 by araiteb          ###   ########.fr       */
+/*   Updated: 2024/04/19 14:59:52 by araiteb          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ Server::Server(std::string ipAdd, int port): m_pass(ipAdd),m_port(port)
 {
 	Server::serverPtr = this;
 	this->name = ":42_IRC ";
-	this->num = 1;
 	this->user_num = 1;
 	this->on = 1;
 	this->timeout = 3 * 60 * 10000000;
@@ -236,6 +235,9 @@ int 		Server::acceptingData(){
 		users[user_num].fd = newfd;
 		users[user_num]. events = POLLIN;
 		user_num++;
+
+        // sendResponce(newfd, this->name + "NOTICE AUTH :*** Looking up your hostname . . .\n");
+	    // sendResponce(newfd, this->name + "NOTICE AUTH :*** Found your hostname\n");
 	} while (newfd != -1);
 	return 1;
 }
@@ -252,27 +254,19 @@ int 	Server::checkmsg(int fd){
 	{
 		memset(buffer, 0, sizeof(buffer));
 		rec = recv(fd, buffer, sizeof(buffer), 0);
-		if (rec < 0)
-		{
-			if (errno != EWOULDBLOCK)
-			{
-				std::cout << "Failed at receiving msg : " << strerror( errno )  << std::endl; 
-				return 0;
-			}
-			continue ;
-		}
-		if (rec == 0)
+		if (rec <= 0)
 		{
 			std::map<int, Client *>::iterator c = clients.find(fd);
 			if (c != this->clients.end())
 				cmdquit(c->second, "Connection closed");
+			std::cout << "Connection closed"  << std::endl;
 			this->clientLeft(fd);
 			return 0;
 		}
 		buffer[rec] = '\0';
 		msg += buffer;
 		Client *user = getClientByFd(fd);
-		while(msg.find_first_of("\r\n") != std::string::npos && msg != "\n")
+		if (msg.find_first_of("\r\n") != std::string::npos && msg != "\n")
 		{
 			size_t pos = msg.find_last_of("\r\n");
 			msg = user->getremain() + msg.substr(0, pos);
@@ -281,8 +275,11 @@ int 	Server::checkmsg(int fd){
 			TraiteMessage(mesg);
 			return 1;
 		}
-		user->setremain(msg);
-		return 1 ;
+		else{
+			std::string remain = user->getremain();
+			user->setremain(remain + msg);
+			return 1 ;
+		}
 	}while(1); // end of accept function
 	return 1;
 }
